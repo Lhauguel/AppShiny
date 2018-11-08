@@ -21,7 +21,7 @@ shinyUI(fluidPage(
       
       # Sidebar with a slider input for number of bins 
       sidebarLayout(
-        sidebarPanel(
+        sidebarPanel( width = 6,
           fileInput('fichier1', 'Sélectionner un fichier',
                     accept = c(
                       'text/csv',
@@ -30,29 +30,11 @@ shinyUI(fluidPage(
                       'text/plain',
                       '.csv',
                       '.tsv'
-                    )
+                    ), placeholder = "Import you data (csv,tsv)"
           ),
-          fileInput('fichier2', 'Sélectionner un fichier',
-                    accept = c(
-                      'text/csv',
-                      'text/comma-separated-values',
-                      'text/tab-separated-values',
-                      'text/plain',
-                      '.csv',
-                      '.tsv'
-                    )
-          ),
-          selectInput(
-            "Gene",
-            "Selection de genes :",
-            choices = NULL
-          )
+          h2("Settings")
         ), 
-        # Show a plot of the generated distribution
         mainPanel(
-          plotOutput("boxplot")
-          #tableOutput("contents1"),
-          #tableOutput("contents2")
         )
       )
     ),
