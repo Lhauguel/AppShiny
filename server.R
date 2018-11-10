@@ -22,6 +22,10 @@ shinyServer(
       output$contents1 <- renderTable({
         data()
       })
+      
+      output$value <- renderPrint({ input$GeneID })
+      output$value <- renderPrint({ input$Stat })
+      output$value <- renderPrint({ input$NameOrga })
 
   }
 )
