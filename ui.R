@@ -21,7 +21,8 @@ shinyUI(fluidPage(
       
       # Sidebar with a slider input for number of bins 
       sidebarLayout(
-        sidebarPanel( width = 9,
+        sidebarPanel( width = 11,
+          h1("Shiny application for enrichment analysis"),
           fileInput('fichier1', 'Sélectionner un fichier',
                     accept = c(
                       'text/csv',
@@ -31,7 +32,7 @@ shinyUI(fluidPage(
                       '.csv',
                       '.tsv'
                     ), placeholder = "Import you data (csv,tsv)",
-                    width = "60%"),
+                    width = "50%"),
           
           h2("Settings"),
           
@@ -63,16 +64,80 @@ shinyUI(fluidPage(
     ),
      
     tabPanel(
-      "Whole Data Inspection"
+      "Whole Data Inspection",
+      sidebarLayout(
+        sidebarPanel( width = 9,
+          h1("Whole Data Inspection"),
+          sliderInput("option1", label = h4("option 1"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option2", label = h4("option 2"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option3", label = h4("option 3"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option4", label = h4("option 4"), min = 0, 
+                      max = 100, value = 50, width = "60%")
+        ),
+        
+        mainPanel(
+        )
+      )
     ),
     tabPanel(
-      "GO Term Enrichment"
+      "GO Term Enrichment",
+      sidebarLayout(
+        sidebarPanel( width = 9,
+          h1("GO Term Enrichment"),
+          sliderInput("option1", label = h4("option 1"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option2", label = h4("option 2"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option3", label = h4("option 3"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option4", label = h4("option 4"), min = 0, 
+                      max = 100, value = 50, width = "60%")
+        ),
+        
+        mainPanel(
+        )
+      )
     ),
     tabPanel(
-      "Pathway Enrichment"
+      "Pathway Enrichment",
+      sidebarLayout(
+        sidebarPanel( width = 9,
+          h1("Pathway Enrichment"),
+          sliderInput("option1", label = h4("option 1"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option2", label = h4("option 2"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option3", label = h4("option 3"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("option4", label = h4("option 4"), min = 0, 
+                      max = 100, value = 50, width = "60%")
+        ),
+        
+        mainPanel(
+        )
+      )
     ),
     tabPanel(
-      "Protein enrichment"
+      "Protein Enrichment",
+    sidebarLayout(
+      sidebarPanel( width = 9,
+        h1("Protein Enrichment"),
+        sliderInput("option1", label = h4("option 1"), min = 0, 
+                    max = 100, value = 50, width = "60%"),
+        sliderInput("option2", label = h4("option 2"), min = 0, 
+                    max = 100, value = 50, width = "60%"),
+        sliderInput("option3", label = h4("option 3"), min = 0, 
+                    max = 100, value = 50, width = "60%"),
+        sliderInput("option4", label = h4("option 4"), min = 0, 
+                    max = 100, value = 50, width = "60%")
+      ),
+      
+      mainPanel(
+      )
+    )
     )
   )
 )
