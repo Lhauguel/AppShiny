@@ -45,7 +45,13 @@ shinyUI(fluidPage(
           h4("Choice p-value and q-value"),
           ## Choix p-value et q-value  
           numericInput("pValueID", label = "p-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
-          numericInput("qValueID", label = "q-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%")
+          numericInput("qValueID", label = "q-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
+          
+          fluidRow(
+            column(6, align="right", offset = 6,
+                   actionButton("Start", "Start analysis")
+            )
+          )
     ),
        
         
