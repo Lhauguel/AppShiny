@@ -17,16 +17,61 @@ shinyServer(
       data <- reactive({req(input$fichier1)
         read.csv(input$fichier1$datapath, header = TRUE, sep = ",", quote = "\"'")
         })
- 
+      
+      ##################################################
+      ## Première page Input Data
+      ##################################################
+      
       ## Premier fichier
       output$contents1 <- renderTable({
         data()
       })
       
-      output$value <- renderPrint({ input$GeneID })
-      output$value <- renderPrint({ input$Stat })
-      output$value <- renderPrint({ input$NameOrga })
+      output$valueGeneID <- renderPrint({ input$GeneID })
+      output$valueStat <- renderPrint({ input$Stat })
+      output$valueOrga <- renderPrint({ input$NameOrga })
+      
+      output$valuePValueID <- renderPrint({ input$pValueID }) 
+      output$valueQValueID <- renderPrint({ input$qValueID })
+      
+      output$valueStart <- renderPrint({ input$Start })
+      
+      ##################################################
+      ## Deuxieme page Whole Data Inspection
+      ##################################################
+      
+      output$valueDataOption1 <- renderPrint({ input$DataOption1 })
+      output$valueDataOption2 <- renderPrint({ input$DataOption2 })
+      output$valueDataOption3 <- renderPrint({ input$DataOption3 })
+      output$valueDataOption4 <- renderPrint({ input$DataOption4 })
+      
+      ##################################################
+      ## Troisieme page GO Term Enrichment
+      ##################################################
+      
+      output$valueGOTermOption1 <- renderPrint({ input$GOTermOption1 })
+      output$valueGOTermOption2 <- renderPrint({ input$GOTermOption2 })
+      output$valueGOTermOption3 <- renderPrint({ input$GOTermOption3 })
+      output$valueGOTermOption4 <- renderPrint({ input$GOTermOption4 })
+      
+      ##################################################
+      ## Quatrième page Pathway Enrichment
+      ##################################################
+      
+      output$valuePathOption1 <- renderPrint({ input$PathOption1 })
+      output$valuePathOption2 <- renderPrint({ input$PathOption2 })
+      output$valuePathOption3 <- renderPrint({ input$PathOption3 })
+      output$valuePathOption4 <- renderPrint({ input$PathOption4 })
+      
+      ##################################################
+      ## Cinquième page Protein Enrichment
+      ##################################################
 
+      output$valueProtOption1 <- renderPrint({ input$ProtOption1 })
+      output$valueProtOption2 <- renderPrint({ input$ProtOption2 })
+      output$valueProtOption3 <- renderPrint({ input$ProtOption3 })
+      output$valueProtOption4 <- renderPrint({ input$ProtOption4 })
+      
   }
 )
   

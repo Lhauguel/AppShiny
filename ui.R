@@ -16,6 +16,10 @@ shinyUI(fluidPage(
   navbarPage(
     "Enrichissement fonctionnelle avec Shiny",
     
+    ##################################################
+    ## Première page Input Data
+    ##################################################
+    
     tabPanel(
       "Input Data",
       
@@ -53,93 +57,104 @@ shinyUI(fluidPage(
                    actionButton("Start", "Start analysis")
             )
           )
-    ),
-       
-        
-        
+        ),
         mainPanel(
         )
       )
-      
     ),
-     
+    
+    ##################################################
+    ## Deuxieme page Whole Data Inspection
+    ##################################################
+    
     tabPanel(
       "Whole Data Inspection",
       sidebarLayout(
         sidebarPanel( width = 9,
           h1("Whole Data Inspection"),
-          sliderInput("option1", label = h4("option 1"), min = 0, 
+          sliderInput("DataOption1", label = h4("option 1"), min = 0, 
                       max = 100, value = 50, width = "60%"),
-          sliderInput("option2", label = h4("option 2"), min = 0, 
+          sliderInput("DataOption2", label = h4("option 2"), min = 0, 
                       max = 100, value = 50, width = "60%"),
-          sliderInput("option3", label = h4("option 3"), min = 0, 
+          sliderInput("DataOption3", label = h4("option 3"), min = 0, 
                       max = 100, value = 50, width = "60%"),
-          sliderInput("option4", label = h4("option 4"), min = 0, 
+          sliderInput("DataOption4", label = h4("option 4"), min = 0, 
                       max = 100, value = 50, width = "60%")
         ),
-        
         mainPanel(
         )
       )
     ),
+
+    ##################################################
+    ## Troisieme page GO Term Enrichment
+    ##################################################
+    
     tabPanel(
       "GO Term Enrichment",
       sidebarLayout(
         sidebarPanel( width = 9,
           h1("GO Term Enrichment"),
-          sliderInput("option1", label = h4("option 1"), min = 0, 
+          sliderInput("GOTermOption1", label = h4("option 1"), min = 0, 
                       max = 100, value = 50, width = "60%"),
-          sliderInput("option2", label = h4("option 2"), min = 0, 
+          sliderInput("GOTermOption2", label = h4("option 2"), min = 0, 
                       max = 100, value = 50, width = "60%"),
-          sliderInput("option3", label = h4("option 3"), min = 0, 
+          sliderInput("GOTermOption3", label = h4("option 3"), min = 0, 
                       max = 100, value = 50, width = "60%"),
-          sliderInput("option4", label = h4("option 4"), min = 0, 
+          sliderInput("GOTermOption4", label = h4("option 4"), min = 0, 
                       max = 100, value = 50, width = "60%")
         ),
-        
         mainPanel(
         )
       )
     ),
+    
+    ##################################################
+    ## Quatrième page Pathway Enrichment
+    ##################################################
+    
     tabPanel(
       "Pathway Enrichment",
-      sidebarLayout(
-        sidebarPanel( width = 9,
-          h1("Pathway Enrichment"),
-          sliderInput("option1", label = h4("option 1"), min = 0, 
-                      max = 100, value = 50, width = "60%"),
-          sliderInput("option2", label = h4("option 2"), min = 0, 
-                      max = 100, value = 50, width = "60%"),
-          sliderInput("option3", label = h4("option 3"), min = 0, 
-                      max = 100, value = 50, width = "60%"),
-          sliderInput("option4", label = h4("option 4"), min = 0, 
-                      max = 100, value = 50, width = "60%")
+    sidebarLayout(
+      sidebarPanel( width = 9,
+        h1("Pathway Enrichment"),
+        sliderInput("PathOption1", label = h4("option 1"), min = 0, 
+                    max = 100, value = 50, width = "60%"),
+        sliderInput("PathOption2", label = h4("option 2"), min = 0, 
+                    max = 100, value = 50, width = "60%"),
+        sliderInput("PathOption3", label = h4("option 3"), min = 0, 
+                    max = 100, value = 50, width = "60%"),
+        sliderInput("PathOption4", label = h4("option 4"), min = 0, 
+                    max = 100, value = 50, width = "60%")
         ),
-        
         mainPanel(
         )
       )
     ),
+    
+    ##################################################
+    ## Cinquième page Protein Enrichment
+    ##################################################
+    
     tabPanel(
       "Protein Enrichment",
-    sidebarLayout(
-      sidebarPanel( width = 9,
-        h1("Protein Enrichment"),
-        sliderInput("option1", label = h4("option 1"), min = 0, 
-                    max = 100, value = 50, width = "60%"),
-        sliderInput("option2", label = h4("option 2"), min = 0, 
-                    max = 100, value = 50, width = "60%"),
-        sliderInput("option3", label = h4("option 3"), min = 0, 
-                    max = 100, value = 50, width = "60%"),
-        sliderInput("option4", label = h4("option 4"), min = 0, 
-                    max = 100, value = 50, width = "60%")
-      ),
-      
-      mainPanel(
+      sidebarLayout(
+        sidebarPanel( width = 9,
+          h1("Protein Enrichment"),
+          sliderInput("ProtOption1", label = h4("option 1"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("ProtOption2", label = h4("option 2"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("ProtOption3", label = h4("option 3"), min = 0, 
+                      max = 100, value = 50, width = "60%"),
+          sliderInput("ProtOption4", label = h4("option 4"), min = 0, 
+                      max = 100, value = 50, width = "60%")
+        ),
+        mainPanel(
+        )
+        
       )
     )
-    )
   )
-)
-)
+))
 
