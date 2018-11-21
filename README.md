@@ -3,4 +3,3 @@ Authors : Benjamin , Lysiane, Pauline, Thomas
 
 AppShiny : Functionnal Enrichment Analysis in RNA-Seq
 
-Quentin et pauline = <3
