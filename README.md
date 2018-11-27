@@ -12,3 +12,11 @@ AppShiny : Functionnal Enrichment Analysis in RNA-Seq
 * biomaRt = 2.34.2
 * clusterProfiler = 3.6.0
 * pathview = 1.18.2
+
+Pour les packages : "biomaRt", "clusterProfiler", "pathview" il faut effectuer quelques lignes :
+
+```
+source("http://bioconductor.org/biocLite.R")
+biocLite("NomPackage")
+library(NomPackage)
+```
