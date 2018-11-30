@@ -25,8 +25,8 @@ AppShiny : Functionnal Enrichment Analysis in RNA-Seq
     * Documentation : `vignette("clusterProfiler", package="clusterProfiler")`
 * pathview
     * Version : 1.18.2
-    * Documentation : `browseVignettes("pathview")`
-
+    * Documentation : `browseVignettes("pathview")
+    `
 Pour les packages : "biomaRt", "clusterProfiler", "pathview" il faut effectuer quelques lignes :
 
 ```
@@ -34,3 +34,7 @@ source("http://bioconductor.org/biocLite.R")
 biocLite("NomPackage")
 library(NomPackage)
 ```
+
+
+package ("Cairo") à installer pour le vulcano plot
+
