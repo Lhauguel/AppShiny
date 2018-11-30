@@ -11,6 +11,37 @@ library(shiny)
 library(DT)
 library(ggplot2)
 
+##source("http://bioconductor.org/biocLite.R")
+
+## install biomart
+##biocLite("biomaRt")
+##library(biomaRt)
+
+## exemple biomart
+##install.packages(biomaRt)
+
+##data<- read.table("Donnees_test.csv", sep = ",")
+##GeneID <- data[1]
+
+##ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+##ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl", version=78)
+##ensembl
+##ensembl = useMart(biomart="ENSEMBL_MART_ENSEMBL", host="uswest.ensembl.org")
+
+
+
+
+## install clusterProfiler
+##biocLite("clusterProfiler")
+##vignette("clusterProfiler", package="clusterProfiler")  ## documentation
+##library(clusterProfiler)
+
+## install pathview
+##biocLite("pathview")
+##browseVignettes("pathview")  ## documentation
+##library(pathview)
+
+
 # Define server logic required to draw a histogram
 shinyServer(
     function(session, input, output) {
@@ -23,7 +54,7 @@ shinyServer(
       ##################################################
       
       ## Premier fichier
-      output$contents1 <- renderTable({
+      output$contents <- renderTable({
         data()
       })
       
@@ -39,6 +70,19 @@ shinyServer(
       ##################################################
       ## Deuxieme page Whole Data Inspection
       ##################################################
+
+      ## Test de volcano plot ERREUR
+      output$Vulcano = renderPlot({
+        data = data()
+        ggplot(data,
+               aes(
+                 x = log2FoldChange,
+                 y = -log10(padj)
+               )) +
+          geom_point() +
+          xlab("log2 fold change") +
+          ylab("p-value")
+      })
       
       output$valueDataOption1 <- renderPrint({ input$DataOption1 })
       output$valueDataOption2 <- renderPrint({ input$DataOption2 })
@@ -67,6 +111,7 @@ shinyServer(
       ## Cinquième page Protein Enrichment
       ##################################################
 
+      
       output$valueProtOption1 <- renderPrint({ input$ProtOption1 })
       output$valueProtOption2 <- renderPrint({ input$ProtOption2 })
       output$valueProtOption3 <- renderPrint({ input$ProtOption3 })
