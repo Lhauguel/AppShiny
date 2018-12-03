@@ -63,7 +63,7 @@ shinyUI(
             )
           ),
           mainPanel(
-            tableOutput("contents")
+            dataTableOutput("contents")
           )
         )
       ),

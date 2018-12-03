@@ -47,14 +47,15 @@ shinyServer(
     function(session, input, output) {
       data <- reactive({req(input$fichier1)
         read.csv(input$fichier1$datapath, header = TRUE, sep = ",", quote = "\"'")
-        })
+     
+      })
       
       ##################################################
       ## Première page Input Data
       ##################################################
       
       ## Premier fichier
-      output$contents <- renderTable({
+      output$contents <- renderDataTable({
         data()
       })
       
@@ -71,7 +72,8 @@ shinyServer(
       ## Deuxieme page Whole Data Inspection
       ##################################################
 
-      ## Test de volcano plot ERREUR
+      ## Test de volcano plot mettre les limites de Foldchange et de -log de pvalue ajustée 
+      
       output$Vulcano = renderPlot({
         data = data()
         ggplot(data,
@@ -79,7 +81,8 @@ shinyServer(
                  x = log2FoldChange,
                  y = -log10(padj)
                )) +
-          geom_point() +
+          geom_point(alpha = 0.5) +
+          xlim(c(-5, 5)) + ylim(c(0, 15)) +
           xlab("log2 fold change") +
           ylab("p-value")
       })
