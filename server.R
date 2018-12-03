@@ -45,10 +45,20 @@ library(ggplot2)
 # Define server logic required to draw a histogram
 shinyServer(
     function(session, input, output) {
-      data <- reactive({req(input$fichier1)
-        read.csv(input$fichier1$datapath, header = TRUE, sep = ",", quote = "\"'")
-     
+      dataComplet = reactive({req(input$fichier1)
+        data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
+        data$Expression = as.factor(ifelse(
+                                    (data$pvalue < input$qValueID) & (data$log2FoldChange > 0),
+                                      "Significativly Over-Expressed",
+                                    ifelse(
+                                     data$pvalue > input$qValueID,
+                                      "Not Significant",
+                                      "Significativly Under-Expressed"
+                                   )
+        ))
+        data
       })
+
       
       ##################################################
       ## Première page Input Data
@@ -56,15 +66,15 @@ shinyServer(
       
       ## Premier fichier
       output$contents <- renderDataTable({
-        data()
+        dataComplet()
       })
       
       output$valueGeneID <- renderPrint({ input$GeneID })
       output$valueStat <- renderPrint({ input$Stat })
       output$valueOrga <- renderPrint({ input$NameOrga })
       
-      output$valuePValueID <- renderPrint({ input$pValueID }) 
-      output$valueQValueID <- renderPrint({ input$qValueID })
+      output$valuePValueID <- renderText({ input$pValueID }) 
+      output$valueQValueID <- renderText({ input$qValueID })
       
       output$valueStart <- renderPrint({ input$Start })
       
@@ -75,11 +85,12 @@ shinyServer(
       ## Test de volcano plot mettre les limites de Foldchange et de -log de pvalue ajustée 
       
       output$Vulcano = renderPlot({
-        data = data()
+        data = dataComplet()
         ggplot(data,
                aes(
                  x = log2FoldChange,
-                 y = -log10(padj)
+                 y = -log10(padj),
+                 col = Expression
                )) +
           geom_point(alpha = 0.5) +
           xlim(c(-5, 5)) + ylim(c(0, 15)) +
