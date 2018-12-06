@@ -47,17 +47,9 @@ shinyServer(
     function(session, input, output) {
       dataComplet = reactive({req(input$fichier1)
         data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
-        data$Expression = as.factor(ifelse(
-                                    (data$pvalue < input$qValueID) & (data$log2FoldChange > 0),
-                                      "Significativly Over-Expressed",
-                                    ifelse(
-                                     data$pvalue > input$qValueID,
-                                      "Not Significant",
-                                      "Significativly Under-Expressed"
-                                   )
-        ))
         data
       })
+      
 
       
       ##################################################
@@ -86,6 +78,15 @@ shinyServer(
       
       output$Vulcano = renderPlot({
         data = dataComplet()
+        data$Expression = as.factor(ifelse(
+          (data$pvalue < input$qValueID1) & (data$log2FoldChange > 0),
+          "Significativly Over-Expressed",
+          ifelse(
+            data$pvalue > input$qValueID1,
+            "Not Significant",
+            "Significativly Under-Expressed"
+          )
+        ))
         ggplot(data,
                aes(
                  x = log2FoldChange,
@@ -98,7 +99,10 @@ shinyServer(
           ylab("p-value")
       })
       
-      output$valueDataOption1 <- renderPrint({ input$DataOption1 })
+      ## Fait apparaitre le slider dans l'interface
+      output$sliderQValue <- renderUI({ sliderInput("qValueID1", label = h4("q-value"), min = 0, 
+                                                    max = 1, value = input$qValueID, width = "60%") 
+                                      })
       output$valueDataOption2 <- renderPrint({ input$DataOption2 })
       output$valueDataOption3 <- renderPrint({ input$DataOption3 })
       output$valueDataOption4 <- renderPrint({ input$DataOption4 })

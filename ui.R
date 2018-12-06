@@ -73,12 +73,13 @@ shinyUI(
       ##################################################
       
       tabPanel(
-        "Whole Data Inspection",
+        "Whole Data Inspection", 
         sidebarLayout(
           sidebarPanel( width = 9,
             h1("Whole Data Inspection"),
-            sliderInput("DataOption1", label = h4("option 1"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
+            uiOutput("sliderQValue"),
+            ## Slider mis dans server.R et apparait ici, permet de mettre en dépendance 
+            ## avec la valeur initiale mise dans la première page 
             sliderInput("DataOption2", label = h4("option 2"), min = 0, 
                         max = 100, value = 50, width = "60%"),
             sliderInput("DataOption3", label = h4("option 3"), min = 0, 
