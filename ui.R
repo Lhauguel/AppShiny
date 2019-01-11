@@ -112,6 +112,8 @@ shinyUI(
                         max = 100, value = 50, width = "60%")
           ),
           mainPanel(
+            plotOutput("GroupGO"),
+            tableOutput("GOID")
           )
         )
       ),

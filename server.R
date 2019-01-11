@@ -6,10 +6,15 @@
 # 
 #    http://shiny.rstudio.com/
 #
+## A nstallé indépendemment du script  
+#source("http://bioconductor.org/biocLite.R")
+#biocLite("clusterProfiler")
 
 library(shiny)
 library(DT)
 library(ggplot2)
+library(clusterProfiler)
+library(org.Hs.eg.db)
 
 ##source("http://bioconductor.org/biocLite.R")
 
@@ -110,6 +115,31 @@ shinyServer(
       ##################################################
       ## Troisieme page GO Term Enrichment
       ##################################################
+      
+      #########################
+      ## Partie ClusterProfiler 
+      #########################
+      
+      output$GroupGO = renderPlot({
+        data = dataComplet()
+        x = data[,1]
+        
+        ids = bitr(x, fromType="ENSEMBL", toType=c("UNIPROT", "PFAM"), OrgDb="org.Hs.eg.db")
+        hg = ids[,2]
+        eg2np = bitr_kegg(hg, fromType='uniprot', toType='kegg', organism='hsa')
+        gse = eg2np[,2]
+        
+        ggo = groupGO(gene     = gse,
+                      OrgDb    = org.Hs.eg.db,
+                      level    = 3,
+                      readable = TRUE)
+        barplot(ggo, drop=TRUE, showCategory=12)
+      })
+      
+      output$GOID = renderTable({
+        ggo$ID
+      })
+
       
       output$valueGOTermOption1 <- renderPrint({ input$GOTermOption1 })
       output$valueGOTermOption2 <- renderPrint({ input$GOTermOption2 })
