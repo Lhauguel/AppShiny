@@ -34,11 +34,9 @@ shinyUI(
             fileInput('fichier1', 'Sélectionner un fichier',
                       accept = c(
                         'text/csv',
-                        'text/comma-separated-values',
-                        'text/tab-separated-values',
-                        'text/plain',
-                        '.csv',
-                        '.tsv'
+                        "text/comma-separated-values,text/plain",
+                        '.csv'#,
+                        #'.tsv'
                       ), placeholder = "Import you data (csv,tsv)",
                       width = "50%"),
             
@@ -48,7 +46,7 @@ shinyUI(
             fluidRow(
               column(4, radioButtons("GeneID", label = "origine gene IDs", choices = list("Gene NCBI" = 1, "Ensembl" = 2), selected = 1)),
               column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1)),
-              column(4, radioButtons("NameOrga", label = "Organism Name", choices = list("biomaRt" = 1, "autre" = 2), selected = 1))
+              column(4, radioButtons("NameOrga", label = "Organism Name", choices = list("Human" = 1, "autre" = 2), selected = 1))
             ),
             
             h4("Choice p-value and q-value"),
@@ -80,12 +78,12 @@ shinyUI(
             uiOutput("sliderQValue"),
             ## Slider mis dans server.R et apparait ici, permet de mettre en dépendance 
             ## avec la valeur initiale mise dans la première page 
-            sliderInput("DataOption2", label = h4("option 2"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
-            sliderInput("DataOption3", label = h4("option 3"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
-            sliderInput("DataOption4", label = h4("option 4"), min = 0, 
-                        max = 100, value = 50, width = "60%")
+            h2("Settings"),
+            
+            ## Choix base de données statistiques et organisme en colonne
+            fluidRow(
+              column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1))
+            )
           ),
           mainPanel(
             plotOutput("Vulcano")
@@ -102,14 +100,14 @@ shinyUI(
         sidebarLayout(
           sidebarPanel( width = 9,
             h1("GO Term Enrichment"),
-            sliderInput("GOTermOption1", label = h4("option 1"), min = 0, 
+            sliderInput("PathOption1", label = h4("option 1"), min = 0, 
                         max = 100, value = 50, width = "60%"),
-            sliderInput("GOTermOption2", label = h4("option 2"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
-            sliderInput("GOTermOption3", label = h4("option 3"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
-            sliderInput("GOTermOption4", label = h4("option 4"), min = 0, 
-                        max = 100, value = 50, width = "60%")
+            h2("Settings"),
+            
+            ## Choix base de données statistiques et organisme en colonne
+            fluidRow(
+              column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1))
+            )
           ),
           mainPanel(
             plotOutput("GroupGO"),
@@ -129,12 +127,12 @@ shinyUI(
           h1("Pathway Enrichment"),
           sliderInput("PathOption1", label = h4("option 1"), min = 0, 
                       max = 100, value = 50, width = "60%"),
-          sliderInput("PathOption2", label = h4("option 2"), min = 0, 
-                      max = 100, value = 50, width = "60%"),
-          sliderInput("PathOption3", label = h4("option 3"), min = 0, 
-                      max = 100, value = 50, width = "60%"),
-          sliderInput("PathOption4", label = h4("option 4"), min = 0, 
-                      max = 100, value = 50, width = "60%")
+          h2("Settings"),
+          
+          ## Choix base de données statistiques et organisme en colonne
+          fluidRow(
+            column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1))
+          )
           ),
           mainPanel(
           )
