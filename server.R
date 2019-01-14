@@ -7,8 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 ## A nstallé indépendemment du script  
-#source("http://bioconductor.org/biocLite.R")
-#biocLite("clusterProfiler")
+## source("http://bioconductor.org/biocLite.R")
+## biocLite("clusterProfiler")
 
 library(shiny)
 library(DT)
@@ -19,8 +19,8 @@ library(org.Hs.eg.db)
 ##source("http://bioconductor.org/biocLite.R")
 
 ## install biomart
-##biocLite("biomaRt")
-##library(biomaRt)
+## biocLite("biomaRt")
+## library(biomaRt)
 
 ## exemple biomart
 ##install.packages(biomaRt)
@@ -167,5 +167,3 @@ shinyServer(
       
   }
 )
-  
-

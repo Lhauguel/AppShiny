@@ -149,13 +149,12 @@ shinyUI(
           sidebarPanel( width = 9,
             h1("Protein Enrichment"),
             sliderInput("ProtOption1", label = h4("option 1"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
-            sliderInput("ProtOption2", label = h4("option 2"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
-            sliderInput("ProtOption3", label = h4("option 3"), min = 0, 
-                        max = 100, value = 50, width = "60%"),
-            sliderInput("ProtOption4", label = h4("option 4"), min = 0, 
-                        max = 100, value = 50, width = "60%")
+                        max = 100, value = 50, width = "60%"), h2("Settings"),
+            
+            ## Choix base de données statistiques et organisme en colonne
+            fluidRow(
+              column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1))
+            )
           ),
           mainPanel(
           )
