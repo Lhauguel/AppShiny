@@ -108,6 +108,12 @@ shinyServer(
       output$sliderQValue <- renderUI({ sliderInput("qValueID1", label = h4("q-value"), min = 0, 
                                                     max = 1, value = input$qValueID, width = "60%") 
                                       })
+      
+      ensembl = useEnsembl(biomart="ensembl")
+      list_ensembl = listDatasets(ensembl)[2]
+      output$toCol <- renderUI({
+        selectInput("test", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
+      })
       output$valueDataOption2 <- renderPrint({ input$DataOption2 })
       output$valueDataOption3 <- renderPrint({ input$DataOption3 })
       output$valueDataOption4 <- renderPrint({ input$DataOption4 })
