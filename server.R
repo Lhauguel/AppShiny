@@ -112,7 +112,7 @@ shinyServer(
       ensembl = useEnsembl(biomart="ensembl")
       list_ensembl = listDatasets(ensembl)[2]
       output$toCol <- renderUI({
-        selectInput("test", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
+        selectInput("BiomaRtOrgo", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
       })
       output$valueDataOption2 <- renderPrint({ input$DataOption2 })
       output$valueDataOption3 <- renderPrint({ input$DataOption3 })
