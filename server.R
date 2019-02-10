@@ -14,13 +14,13 @@ library(shiny)
 library(DT)
 library(ggplot2)
 library(clusterProfiler)
+library(biomaRt)
 library(org.Hs.eg.db)
 
 ##source("http://bioconductor.org/biocLite.R")
 
 ## install biomart
 ## biocLite("biomaRt")
-## library(biomaRt)
 
 ## exemple biomart
 ##install.packages(biomaRt)
