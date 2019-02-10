@@ -53,6 +53,7 @@ shinyUI(
             ## Choix p-value et q-value  
             numericInput("pValueID", label = "p-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
             numericInput("qValueID", label = "q-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
+            numericInput("log2FCID", label = "log 2 Fold change", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
             
             fluidRow(
               column(6, align="right", offset = 6,

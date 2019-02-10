@@ -104,10 +104,11 @@ shinyServer(
                  y = -log10(padj),
                  col = Expression
                )) +
-          geom_point(alpha = 0.5) +
-          xlim(c(-5, 5)) + ylim(c(0, 15)) +
+          geom_point(alpha = 0.5) + 
+          scale_colour_discrete(drop=FALSE) +
+          xlim(c(-1.5, 1.5)) + ylim(c(0, 3.2)) +
           xlab("log2 fold change") +
-          ylab("p-value")
+          ylab("-log10(p-value)")
       })
       
       ## Fait apparaitre le slider dans l'interface
