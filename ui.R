@@ -88,7 +88,10 @@ shinyUI(
             )
           ),
           mainPanel(
-            plotOutput("Vulcano")
+            tabsetPanel(
+              tabPanel("VulcanoPlot", plotlyOutput("Vulcano")), 
+              tabPanel("MAPlot", plotlyOutput("MAPlot"))
+            )
           )
         )
       ),

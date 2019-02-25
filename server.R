@@ -17,6 +17,8 @@ library(clusterProfiler)
 library(biomaRt)
 library(org.Hs.eg.db)
 
+library(plotly)
+
 ##source("http://bioconductor.org/biocLite.R")
 
 ## install biomart
@@ -101,7 +103,35 @@ shinyServer(
       
       ## Test de volcano plot mettre les limites de Foldchange et de -log de pvalue ajustée 
       
-      output$Vulcano = renderPlot({
+      
+      output$Vulcano = renderPlotly({
+        data = dataComplet()
+        log2FC = as.numeric(input$log2FCID1)
+        data$Expression = as.factor(ifelse(
+          (data$pvalue > input$qValueID1) | (-log2FC < data$log2FoldChange) & (data$log2FoldChange < log2FC),
+          "Not Significant",
+          ifelse(
+            (data$pvalue < input$qValueID1) & (data$log2FoldChange < 0),
+            "Under-Expressed",
+            "Over-Expressed"
+          )
+        ))
+        ggplotly(ggplot(data,
+               aes(
+                 x = log2FoldChange,
+                 y = -log10(padj),
+                 col = Expression
+               )) +
+        ##  geom_point(alpha = 0.5) + 
+          geom_point(aes(text = paste("Symbol:", symbol)), size = 0.5) +
+          scale_colour_discrete(drop=FALSE) +
+          xlim(c(min(log2(data$log2FoldChange)), max(log2(data$log2FoldChange)))) + ylim(c(min(-log10(data$padj)), max(-log10(data$padj)))) +
+          xlab("log2 fold change") +
+          ylab("-log10(p-value)"))
+      })
+
+      
+      output$MAPlot = renderPlotly({
         data = dataComplet()
         log2FC = as.numeric(input$log2FCID1)
         data$Expression = as.factor(ifelse(
@@ -113,17 +143,17 @@ shinyServer(
             "Over-Expressed"
           )
         ))
-        ggplot(data,
+        ggplotly(ggplot(data,
                aes(
-                 x = log2FoldChange,
-                 y = -log10(padj),
+                 x = log2(basemean),
+                 y = log2FoldChange,
                  col = Expression
                )) +
-          geom_point(alpha = 0.5) + 
+          geom_point(aes(text = paste("Symbol:", symbol)), size = 0.5) +
           scale_colour_discrete(drop=FALSE) +
-          xlim(c(-1.5, 1.5)) + ylim(c(0, 3.2)) +
+          xlim(c(min(log2(data$basemean)), max(log2(data$basemean)))) + ylim(c(min(data$log2FoldChange), max(data$log2FoldChange))) +
           xlab("log2 fold change") +
-          ylab("-log10(p-value)")
+          ylab("-log10(p-value)"))
       })
       
       #ensembl = useEnsembl(biomart="ensembl")
