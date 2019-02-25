@@ -1,11 +1,11 @@
-#
-# This is the server logic of a Shiny web application. You can run the 
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
+#################################################################################
+###### This is the server logic of a Shiny web application. You can run the #####
+#################### application by clicking 'Run App' above. ###################
+#################################################################################
+########## Find out more about building applications with Shiny here: ###########
+########################### http://shiny.rstudio.com/ ###########################
+#################################################################################
+
 ## A nstallé indépendemment du script  
 ## source("http://bioconductor.org/biocLite.R")
 ## biocLite("clusterProfiler")
@@ -14,6 +14,7 @@ library(shiny)
 library(DT)
 library(ggplot2)
 library(clusterProfiler)
+library(biomaRt)
 library(org.Hs.eg.db)
 library(biomaRt)
 
@@ -21,7 +22,6 @@ library(biomaRt)
 
 ## install biomart
 ## biocLite("biomaRt")
-## library(biomaRt)
 
 ## exemple biomart
 ##install.packages(biomaRt)
@@ -76,6 +76,12 @@ shinyServer(
       
       output$valueStart <- renderPrint({ input$Start })
       
+      ensembl = useEnsembl(biomart="ensembl")
+      list_ensembl = listDatasets(ensembl)[2]
+      output$toCol <- renderUI({
+        selectInput("BiomaRtOrgo", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
+      })
+      
       ##################################################
       ## Deuxieme page Whole Data Inspection
       ##################################################
@@ -99,10 +105,11 @@ shinyServer(
                  y = -log10(padj),
                  col = Expression
                )) +
-          geom_point(alpha = 0.5) +
-          xlim(c(-5, 5)) + ylim(c(0, 15)) +
+          geom_point(alpha = 0.5) + 
+          scale_colour_discrete(drop=FALSE) +
+          xlim(c(-1.5, 1.5)) + ylim(c(0, 3.2)) +
           xlab("log2 fold change") +
-          ylab("p-value")
+          ylab("-log10(p-value)")
       })
       
       ## Fait apparaitre le slider dans l'interface
@@ -110,11 +117,11 @@ shinyServer(
                                                     max = 1, value = input$qValueID, width = "60%") 
                                       })
       
-      ensembl = useEnsembl(biomart="ensembl")
-      list_ensembl = listDatasets(ensembl)[2]
-      output$toCol <- renderUI({
-        selectInput("test", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
-      })
+      #ensembl = useEnsembl(biomart="ensembl")
+      #list_ensembl = listDatasets(ensembl)[2]
+      #output$toCol <- renderUI({
+      #  selectInput("BiomaRtOrgo", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
+      #})
       output$valueDataOption2 <- renderPrint({ input$DataOption2 })
       output$valueDataOption3 <- renderPrint({ input$DataOption3 })
       output$valueDataOption4 <- renderPrint({ input$DataOption4 })

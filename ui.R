@@ -21,7 +21,7 @@ shinyUI(
       "Enrichissement fonctionnelle avec Shiny",
       
       ##################################################
-      ## Première page Input Data
+      ############ Première page Input Data ############
       ##################################################
       
       tabPanel(
@@ -53,6 +53,7 @@ shinyUI(
             ## Choix p-value et q-value  
             numericInput("pValueID", label = "p-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
             numericInput("qValueID", label = "q-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
+            numericInput("log2FCID", label = "log 2 Fold change", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
             
             fluidRow(
               column(6, align="right", offset = 6,
@@ -66,9 +67,9 @@ shinyUI(
         )
       ),
       
-      ##################################################
-      ## Deuxieme page Whole Data Inspection
-      ##################################################
+      ###################################################
+      ####### Deuxieme page Whole Data Inspection #######
+      ###################################################
       
       tabPanel(
         "Whole Data Inspection", 
@@ -91,9 +92,9 @@ shinyUI(
         )
       ),
   
-      ##################################################
-      ## Troisieme page GO Term Enrichment
-      ##################################################
+      ###################################################
+      ######## Troisieme page GO Term Enrichment ########
+      ###################################################
       
       tabPanel(
         "GO Term Enrichment",
@@ -116,9 +117,9 @@ shinyUI(
         )
       ),
       
-      ##################################################
-      ## Quatrième page Pathway Enrichment
-      ##################################################
+      ###################################################
+      ######## Quatrième page Pathway Enrichment ########
+      ###################################################
       
       tabPanel(
         "Pathway Enrichment",
@@ -139,9 +140,9 @@ shinyUI(
         )
       ),
       
-      ##################################################
-      ## Cinquième page Protein Enrichment
-      ##################################################
+      ###################################################
+      ######## Cinquième page Protein Enrichment ########
+      ###################################################
       
       tabPanel(
         "Protein Enrichment",
