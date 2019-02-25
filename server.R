@@ -172,7 +172,7 @@ shinyServer(
     
     
     
-    output$GroupGO = renderPlot({
+    tableGgo <- reactive({
       data = dataComplet()
       x = data[,1]
       
@@ -185,11 +185,16 @@ shinyServer(
                     OrgDb    = org.Hs.eg.db,
                     level    = input$level,
                     readable = TRUE)
+    })
+    
+    output$GroupGO = renderPlot({
+      ggo <- tableGgo()
       barplot(ggo, drop=TRUE, showCategory = 25)
     })
     
     output$GOID = renderTable({
-      ggo$ID
+      ggo <- tableGgo()
+      ggo[,1:4]
     })
     
     
