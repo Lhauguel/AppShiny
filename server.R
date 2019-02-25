@@ -202,7 +202,13 @@ shinyServer(
       #nb_gene_total = nrow(dataGene())
       output$occurences = renderPrint({ 
         data_gene_pfam <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = dataGene(), mart = h_sapiens )
-        table(unlist(data_gene_pfam[2])) })
+        data_gene_pfam
+        tmp <- table(unlist(data_gene_pfam[2]))
+        mauvaise_ligne <- which(rownames(tmp) == "")
+        tableau <- tmp[-mauvaise_ligne]
+        tableau
+
+      })
       
   }
 )

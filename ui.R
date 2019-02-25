@@ -77,6 +77,7 @@ shinyUI(
           sidebarPanel( width = 9,
             h1("Whole Data Inspection"),
             uiOutput("sliderQValue"),
+            uiOutput("sliderFC"),
             ## Slider mis dans server.R et apparait ici, permet de mettre en dépendance 
             ## avec la valeur initiale mise dans la première page 
             h2("Settings"),
@@ -103,6 +104,7 @@ shinyUI(
             h1("GO Term Enrichment"),
             sliderInput("PathOption1", label = h4("option 1"), min = 0, 
                         max = 100, value = 50, width = "60%"),
+            numericInput("level", label = h4("Go level"), value = 2),
             h2("Settings"),
             
             ## Choix base de données statistiques et organisme en colonne
