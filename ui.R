@@ -100,7 +100,7 @@ shinyUI(
                           h1("GO Term Enrichment"),
                           sliderInput("PathOption1", label = h4("option 1"), min = 0, 
                                       max = 100, value = 50, width = "60%"),
-                          numericInput("level", label = h4("Go level"), value = 2),
+                          numericInput("level", label = h4("Go level"), value = 2, max = 8, min = 1),
                           h2("Settings"),
                           
                           ## Choix base de données statistiques et organisme en colonne
@@ -134,6 +134,7 @@ shinyUI(
                           )
             ),
             mainPanel(
+              
             )
           )
         ),
