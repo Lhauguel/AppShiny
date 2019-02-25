@@ -77,6 +77,7 @@ shinyUI(
           sidebarPanel( width = 9,
             h1("Whole Data Inspection"),
             uiOutput("sliderQValue"),
+            uiOutput("sliderFC"),
             ## Slider mis dans server.R et apparait ici, permet de mettre en dépendance 
             ## avec la valeur initiale mise dans la première page 
             h2("Settings"),

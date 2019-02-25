@@ -72,6 +72,7 @@ shinyServer(
       
       output$valuePValueID <- renderText({ input$pValueID }) 
       output$valueQValueID <- renderText({ input$qValueID })
+      output$valuelog2FCIDD <- renderText({ input$log2FCID })
       
       output$valueStart <- renderPrint({ input$Start })
       
@@ -85,17 +86,26 @@ shinyServer(
       ## Deuxieme page Whole Data Inspection
       ##################################################
 
+      ## Fait apparaitre le slider dans l'interface
+      output$sliderQValue <- renderUI({ sliderInput("qValueID1", label = h4("q-value"), min = 0, 
+                                                    max = 1, value = input$qValueID, width = "60%") 
+      })
+      output$sliderFC <- renderUI({ sliderInput("log2FCID1", label = h4("log 2 Fold change"), min = 0, 
+                                                    max = 2, step = 0.01, value = input$log2FCID, width = "60%") 
+      })
+      
       ## Test de volcano plot mettre les limites de Foldchange et de -log de pvalue ajustée 
       
       output$Vulcano = renderPlot({
         data = dataComplet()
+        log2FC = as.numeric(input$log2FCID1)
         data$Expression = as.factor(ifelse(
-          (data$pvalue < input$qValueID1) & (data$log2FoldChange > 0),
-          "Significativly Over-Expressed",
-          ifelse(
-            data$pvalue > input$qValueID1,
+            (data$pvalue > input$qValueID1) | (-log2FC < data$log2FoldChange) & (data$log2FoldChange < log2FC),
             "Not Significant",
-            "Significativly Under-Expressed"
+            ifelse(
+              (data$pvalue < input$qValueID1) & (data$log2FoldChange < 0),
+              "Under-Expressed",
+            "Over-Expressed"
           )
         ))
         ggplot(data,
@@ -110,11 +120,6 @@ shinyServer(
           xlab("log2 fold change") +
           ylab("-log10(p-value)")
       })
-      
-      ## Fait apparaitre le slider dans l'interface
-      output$sliderQValue <- renderUI({ sliderInput("qValueID1", label = h4("q-value"), min = 0, 
-                                                    max = 1, value = input$qValueID, width = "60%") 
-                                      })
       
       #ensembl = useEnsembl(biomart="ensembl")
       #list_ensembl = listDatasets(ensembl)[2]
