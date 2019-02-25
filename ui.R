@@ -88,8 +88,15 @@ shinyUI(
             )
           ),
           mainPanel(
+<<<<<<< HEAD
             plotOutput("Vulcano", click='plot_click'),
             tableOutput('clickedPoints')
+=======
+            tabsetPanel(
+              tabPanel("VulcanoPlot", plotlyOutput("Vulcano")), 
+              tabPanel("MAPlot", plotlyOutput("MAPlot"))
+            )
+>>>>>>> thomas
           )
         )
       ),
@@ -162,7 +169,6 @@ shinyUI(
           ),
           mainPanel(
           )
-          
         )
       )
     )
