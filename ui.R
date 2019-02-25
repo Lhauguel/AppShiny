@@ -88,7 +88,8 @@ shinyUI(
             )
           ),
           mainPanel(
-            plotOutput("Vulcano")
+            plotOutput("Vulcano", click='plot_click'),
+            tableOutput('clickedPoints')
           )
         )
       ),

@@ -57,8 +57,9 @@ shinyServer(
         log2FC <- data[,"log2FoldChange"]
         Pvalue <- data[,"pvalue"]
         Qvalue <- data[,"padj"]
+        logQval = -log10(Qvalue)
         
-        newTable <- data.frame(symbol = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
+        newTable <- data.frame(symbol = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue, log10padj = logQval)
       })
       
       
@@ -68,7 +69,8 @@ shinyServer(
       
       ## Premier fichier
       output$contents <- renderDataTable({
-        dataComplet()
+        data <- dataComplet()
+        data[1:5]
       })
       
       output$valueGeneID <- renderPrint({ input$GeneID })
@@ -116,7 +118,7 @@ shinyServer(
         ggplot(data,
                aes(
                  x = log2FoldChange,
-                 y = -log10(padj),
+                 y = log10padj,
                  col = Expression
                )) +
           geom_point(alpha = 0.5) + 
@@ -125,6 +127,15 @@ shinyServer(
           xlab("log2 fold change") +
           ylab("-log10(p-value)")
       })
+      #get the clicked points!
+      clicked <- reactive({
+        data = dataComplet()
+        nearPoints(data, input$plot_click)
+      })
+      
+      output$clickedPoints <- renderTable({
+        clicked()
+      }, rownames = T)
       
       #ensembl = useEnsembl(biomart="ensembl")
       #list_ensembl = listDatasets(ensembl)[2]
