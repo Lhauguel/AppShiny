@@ -16,7 +16,6 @@ library(ggplot2)
 library(clusterProfiler)
 library(biomaRt)
 library(org.Hs.eg.db)
-
 library(plotly)
 
 ##source("http://bioconductor.org/biocLite.R")
@@ -152,8 +151,8 @@ shinyServer(
           geom_point(aes(text = paste("Symbol:", symbol)), size = 0.5) +
           scale_colour_discrete(drop=FALSE) +
           xlim(c(min(log2(data$basemean)), max(log2(data$basemean)))) + ylim(c(min(data$log2FoldChange), max(data$log2FoldChange))) +
-          xlab("log2 fold change") +
-          ylab("-log10(p-value)"))
+          xlab("log2 basemean") +
+          ylab("log2 fold change"))
       })
       
       #ensembl = useEnsembl(biomart="ensembl")
