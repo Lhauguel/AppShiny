@@ -14,13 +14,13 @@ library(shiny)
 library(DT)
 library(ggplot2)
 library(clusterProfiler)
+library(biomaRt)
 library(org.Hs.eg.db)
 
 ##source("http://bioconductor.org/biocLite.R")
 
 ## install biomart
 ## biocLite("biomaRt")
-## library(biomaRt)
 
 ## exemple biomart
 ##install.packages(biomaRt)
@@ -133,6 +133,8 @@ shinyServer(
       ## Partie ClusterProfiler 
       #########################
       
+      
+      
       output$GroupGO = renderPlot({
         data = dataComplet()
         x = data[,1]
@@ -144,9 +146,9 @@ shinyServer(
         
         ggo = groupGO(gene     = gse,
                       OrgDb    = org.Hs.eg.db,
-                      level    = 3,
+                      level    = input$level,
                       readable = TRUE)
-        barplot(ggo, drop=TRUE, showCategory=12)
+        barplot(ggo, drop=TRUE, showCategory = 25)
       })
       
       output$GOID = renderTable({
