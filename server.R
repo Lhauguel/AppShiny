@@ -52,10 +52,15 @@ shinyServer(
     function(session, input, output) {
       dataComplet = reactive({req(input$fichier1)
         data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
-        data
+        X <-data[,"X"]
+        BaseMean <- data[,"baseMean"]
+        log2FC <- data[,"log2FoldChange"]
+        Pvalue <- data[,"pvalue"]
+        Qvalue <- data[,"padj"]
+        
+        newTable <- data.frame(symbol = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
       })
       
-
       
       ##################################################
       ## Première page Input Data
