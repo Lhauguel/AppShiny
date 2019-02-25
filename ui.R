@@ -158,6 +158,9 @@ shinyUI(
             )
           ),
           mainPanel(
+            dataTableOutput("pfam"),
+            verbatimTextOutput("nb_gene_total"),
+            verbatimTextOutput("occurences")
           )
           
         )

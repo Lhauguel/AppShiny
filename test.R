@@ -4,6 +4,7 @@
 
 library(biomaRt)
 
+listMarts()
 listEnsembl() # list des bdd
 ensembl = useEnsembl(biomart="ensembl")
 
@@ -22,6 +23,26 @@ listFilters(h_sapiens)  #si on veut voir ce qu'il y a dans humain
 getBM(attributes=c('ensembl_gene_id','ensembl_transcript_id', 'ensembl_peptide_id', 'kegg_enzyme', 'pdb', 'pfam'),filters = 'ensembl_gene_id', values = 'ENSG00000223972', mart = h_sapiens)
 getBM(attributes=c('ensembl_gene_id', 'ensembl_transcript_id', 'pfam'),filters = 'ensembl_gene_id', values = 'ENSG00000223972', mart = h_sapiens)
 
-data <- read.csv("court_data.csv")
-data
-getBM(attributes=c('pdb'),filters = 'ensembl_gene_id', values = x, mart = h_sapiens)
+data <- read.csv("court_data.csv", header = TRUE)
+gene_id<-data[1]
+gene_id #liste des genes du fichier
+
+list_id <- getBM(attributes=c('pdb', 'pfam', 'family', 'superfamily'),filters = 'ensembl_gene_id', values = gene_id, mart = h_sapiens) # listes des id pdb et pfam (de chaque genes du fichier)
+list_id
+id_pfam <- list_id[2]
+id_pfam
+id_family <- list_id[3]
+getBM(attributes=c('ensembl_gene_id', 'pfam', 'pdb'), filters = 'with_pfam', values = id_pfam, mart = h_sapiens)
+
+test <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = gene_id, mart = h_sapiens)
+test
+(test)
+
+nb_gene_total <- nrow(gene_id)
+nb_gene_total
+occurences <- table(unlist(gene_id))
+occurences
+
+for (i in table(unlist(gene_id))){
+  print(i)
+}

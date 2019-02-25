@@ -54,6 +54,13 @@ shinyServer(
       dataComplet = reactive({req(input$fichier1)
         data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
         data
+        
+      })
+      
+      dataGene = reactive({req(input$fichier1)
+        data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
+        data[1]
+
       })
       
 
@@ -118,10 +125,12 @@ shinyServer(
                                       })
       
       #ensembl = useEnsembl(biomart="ensembl")
+      #input$data_gene = dataComplet[1]
       #list_ensembl = listDatasets(ensembl)[2]
       #output$toCol <- renderUI({
       #  selectInput("BiomaRtOrgo", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
       #})
+      output$data_gene <- renderPrint({ input$data_gene })
       output$valueDataOption2 <- renderPrint({ input$DataOption2 })
       output$valueDataOption3 <- renderPrint({ input$DataOption3 })
       output$valueDataOption4 <- renderPrint({ input$DataOption4 })
@@ -178,6 +187,22 @@ shinyServer(
       output$valueProtOption2 <- renderPrint({ input$ProtOption2 })
       output$valueProtOption3 <- renderPrint({ input$ProtOption3 })
       output$valueProtOption4 <- renderPrint({ input$ProtOption4 })
+      
+      output$contents_gene <- renderDataTable({
+        dataGene()
+      })
+      ensembl = useEnsembl(biomart="ensembl")
+      h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+      output$pfam <- renderDataTable({
+        getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = dataGene(), mart = h_sapiens)
+      })
+      
+      
+      output$nb_gene_total = renderPrint({ nrow(dataGene()) })
+      #nb_gene_total = nrow(dataGene())
+      output$occurences = renderPrint({ 
+        data_gene_pfam <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = dataGene(), mart = h_sapiens )
+        table(unlist(data_gene_pfam[2])) })
       
   }
 )
