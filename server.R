@@ -1,11 +1,3 @@
-#################################################################################
-###### This is the server logic of a Shiny web application. You can run the #####
-#################### application by clicking 'Run App' above. ###################
-#################################################################################
-########## Find out more about building applications with Shiny here: ###########
-########################### http://shiny.rstudio.com/ ###########################
-#################################################################################
-
 ## A nstallé indépendemment du script  
 ## source("http://bioconductor.org/biocLite.R")
 ## biocLite("clusterProfiler")
@@ -52,8 +44,12 @@ library(pathview)
 # Define server logic required to draw a histogram
 shinyServer(
   function(session, input, output) {
+<<<<<<< HEAD
     dataComplet = eventReactive(input$Start,
                                 {req(input$fichier1)
+=======
+    dataComplet = reactive({req(input$fichier1)
+>>>>>>> master
       data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
       X <-data[,"geneid"]
       BaseMean <- data[,"baseMean"]
@@ -217,6 +213,7 @@ shinyServer(
     ## Quatrième page Pathway Enrichment
     ##################################################
     
+<<<<<<< HEAD
     data(paths.hsa)
     pathwayName <- data.frame(matrix(unlist(paths.hsa), nrow=length(paths.hsa), byrow=T))
     
@@ -226,14 +223,19 @@ shinyServer(
     
     
     
+=======
+>>>>>>> master
     output$valuePathOption1 <- renderPrint({ input$PathOption1 })
     output$valuePathOption2 <- renderPrint({ input$PathOption2 })
     output$valuePathOption3 <- renderPrint({ input$PathOption3 })
     output$valuePathOption4 <- renderPrint({ input$PathOption4 })
     
+<<<<<<< HEAD
     
     
     
+=======
+>>>>>>> master
     ##################################################
     ## Cinquième page Protein Enrichment
     ##################################################

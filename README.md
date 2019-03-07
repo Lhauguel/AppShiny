@@ -17,6 +17,9 @@ AppShiny : Functionnal Enrichment Analysis in RNA-Seq
 * ggplot2
     * Version : 3.1.0
     * Documentation : 
+* plotly 
+    * Version : 4.8.0
+    * Documentation : 
 * biomaRt
     * Version : 2.34.2
     * Documentation : https://bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.html

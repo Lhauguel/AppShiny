@@ -4,7 +4,10 @@ library(shiny)
 library(DT)
 library(ggplot2)
 library(plotly)
+<<<<<<< HEAD
 library("shinythemes")
+=======
+>>>>>>> master
 
 # Define UI for application that draws a histogram
 shinyUI(
@@ -46,6 +49,7 @@ shinyUI(
                           
                           h4("Choice p-value and q-value"),
                           ## Choix p-value et q-value  
+<<<<<<< HEAD
                           fluidRow(
                           column(4,
                               numericInput("pValueID", label = "p-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "40%")),
@@ -54,6 +58,11 @@ shinyUI(
                           column(4,
                             numericInput("log2FCID", label = "log 2 Fold change", value = 0.05, min = 0, max = 1, step = 0.01, width = "60%"))
                           ),
+=======
+                          numericInput("pValueID", label = "p-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
+                          numericInput("qValueID", label = "q-Value", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
+                          numericInput("log2FCID", label = "log 2 Fold change", value = 0.05, min = 0, max = 1, step = 0.01, width = "25%"),
+>>>>>>> master
                           
                           fluidRow(
                             column(6, align="right", offset = 6,
@@ -74,7 +83,11 @@ shinyUI(
         tabPanel(
           "Whole Data Inspection", 
           sidebarLayout(
+<<<<<<< HEAD
             sidebarPanel( width = 4,
+=======
+            sidebarPanel( width = 9,
+>>>>>>> master
                           h1("Whole Data Inspection"),
                           uiOutput("sliderQValue"),
                           uiOutput("sliderFC"),
@@ -87,7 +100,11 @@ shinyUI(
                             column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1))
                           )
             ),
+<<<<<<< HEAD
             mainPanel( 
+=======
+            mainPanel(
+>>>>>>> master
               tabsetPanel(
                 tabPanel("VulcanoPlot", plotlyOutput("Vulcano")), 
                 tabPanel("MAPlot", plotlyOutput("MAPlot"))
@@ -103,8 +120,15 @@ shinyUI(
         tabPanel(
           "GO Term Enrichment",
           sidebarLayout(
+<<<<<<< HEAD
             sidebarPanel( width = 4,
                           h1("GO Term Enrichment"),
+=======
+            sidebarPanel( width = 9,
+                          h1("GO Term Enrichment"),
+                          sliderInput("PathOption1", label = h4("option 1"), min = 0, 
+                                      max = 100, value = 50, width = "60%"),
+>>>>>>> master
                           numericInput("level", label = h4("Go level"), value = 2, max = 8, min = 1),
                           h2("Settings"),
                           
@@ -127,8 +151,15 @@ shinyUI(
         tabPanel(
           "Pathway Enrichment",
           sidebarLayout(
+<<<<<<< HEAD
             sidebarPanel( width = 4,
                           h1("Pathway Enrichment"),
+=======
+            sidebarPanel( width = 9,
+                          h1("Pathway Enrichment"),
+                          sliderInput("PathOption1", label = h4("option 1"), min = 0, 
+                                      max = 100, value = 50, width = "60%"),
+>>>>>>> master
                           h2("Settings"),
                           
                           ## Choix base de données statistiques et organisme en colonne
@@ -149,9 +180,17 @@ shinyUI(
         tabPanel(
           "Protein Enrichment",
           sidebarLayout(
+<<<<<<< HEAD
             sidebarPanel( width = 4,
                           h1("Protein Enrichment"),
   
+=======
+            sidebarPanel( width = 9,
+                          h1("Protein Enrichment"),
+                          sliderInput("ProtOption1", label = h4("option 1"), min = 0, 
+                                      max = 100, value = 50, width = "60%"), h2("Settings"),
+                          
+>>>>>>> master
                           ## Choix base de données statistiques et organisme en colonne
                           fluidRow(
                             column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1))
