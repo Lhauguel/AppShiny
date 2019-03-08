@@ -38,7 +38,7 @@ shinyUI(
                           
                           ## Choix base de données statistiques et organisme en colonne
                           fluidRow(
-                            column(4, radioButtons("GeneID", label = "origine gene IDs", choices = list("Gene NCBI" = 1, "Ensembl" = 2), selected = 1)),
+                            column(4, radioButtons("GeneID", label = "origine gene IDs", choices = list("NCBI" = 1, "Ensembl" = 2), selected = 1)),
                             column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1)),
                             column(4, uiOutput(("toCol")))
                           ),

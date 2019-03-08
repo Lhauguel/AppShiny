@@ -53,14 +53,23 @@ shinyServer(
         Pvalue <- data[,"pvalue"]
         Qvalue <- data[,"padj"]
         
-        newTable <- data.frame(symbol = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
+        newTable <- data.frame(id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
       })
+    
+    originGeneID <- reactive({
+      if (input$GeneID == 1) originID = "ncbiID"
+      else originID = "ensemblID"
+    })
     
     dataIDKegg = reactive({ 
       data = dataComplet()
+      id <- originGeneID()
+      
+      if (id == "ncbiID") ID = "ENTREZID"
+      else ID = "ENSEMBL"
       x = data[,1]
       
-      ids = bitr(x, fromType="ENSEMBL", toType=c("UNIPROT", "PFAM"), OrgDb="org.Hs.eg.db")
+      ids = bitr(x, fromType=ID, toType=c("UNIPROT"), OrgDb="org.Hs.eg.db")
       hg = ids[,2]
       eg2np = bitr_kegg(hg, fromType='uniprot', toType='kegg', organism='hsa')
       gse = eg2np[,2]
@@ -236,23 +245,14 @@ shinyServer(
       idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
 
       id <- substring(idpathway, 4)
-      pathview(gene.data = gse, pathway.id = id, species = "hsa")
-      
+      pathwaytOut <- pathview(gene.data = gse, pathway.id = id, species = "hsa")
     })
   
     output$PathwayEnrichment <- renderPrint({
-      pathway <- IDpathway()
-      id <- pathway$id
-      print("Téléchargement de la voie métabolique hsa",id)
+      IDpathway()
+      print("Téléchargement de la voie métabolique !")
     })
-    
-    
-    output$valuePathOption1 <- renderPrint({ input$PathOption1 })
-    output$valuePathOption2 <- renderPrint({ input$PathOption2 })
-    output$valuePathOption3 <- renderPrint({ input$PathOption3 })
-    output$valuePathOption4 <- renderPrint({ input$PathOption4 })
-    
-    
+
     
     
     ##################################################
