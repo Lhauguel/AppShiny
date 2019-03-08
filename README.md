@@ -29,7 +29,9 @@ AppShiny : Functionnal Enrichment Analysis in RNA-Seq
 * pathview
     * Version : 1.18.2
     * Documentation : `browseVignettes("pathview")
-    
+* shinycssloaders
+    * Version : 0.2.0
+    * Documentation :    
 
 Pour les packages : "biomaRt", "clusterProfiler", "pathview" il faut effectuer quelques lignes :
 
