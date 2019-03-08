@@ -1,4 +1,4 @@
-## A nstallé indépendemment du script  
+## A installé indépendemment du script  
 ## source("http://bioconductor.org/biocLite.R")
 ## biocLite("clusterProfiler")
 
@@ -9,6 +9,7 @@ library(clusterProfiler)
 library(biomaRt)
 library(org.Hs.eg.db)
 library(plotly)
+library(pathview)
 
 ##source("http://bioconductor.org/biocLite.R")
 
@@ -43,17 +44,28 @@ library(plotly)
 # Define server logic required to draw a histogram
 shinyServer(
   function(session, input, output) {
-    dataComplet = reactive({req(input$fichier1)
-      data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
-      X <-data[,"geneid"]
-      BaseMean <- data[,"baseMean"]
-      log2FC <- data[,"log2FoldChange"]
-      Pvalue <- data[,"pvalue"]
-      Qvalue <- data[,"padj"]
-      
-      newTable <- data.frame(symbol = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
-    })
+    dataComplet = eventReactive(input$Start,
+      {req(input$fichier1)
+        data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
+        X <-data[,"geneid"]
+        BaseMean <- data[,"baseMean"]
+        log2FC <- data[,"log2FoldChange"]
+        Pvalue <- data[,"pvalue"]
+        Qvalue <- data[,"padj"]
+        
+        newTable <- data.frame(symbol = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
+      })
     
+    dataIDKegg = reactive({ 
+      data = dataComplet()
+      x = data[,1]
+      
+      ids = bitr(x, fromType="ENSEMBL", toType=c("UNIPROT", "PFAM"), OrgDb="org.Hs.eg.db")
+      hg = ids[,2]
+      eg2np = bitr_kegg(hg, fromType='uniprot', toType='kegg', organism='hsa')
+      gse = eg2np[,2]
+      gse
+      })
     
     dataGene = reactive({req(input$fichier1)
       data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
@@ -173,13 +185,8 @@ shinyServer(
     
     
     tableGgo <- reactive({
-      data = dataComplet()
-      x = data[,1]
+      gse <- dataIDKegg() 
       
-      ids = bitr(x, fromType="ENSEMBL", toType=c("UNIPROT", "PFAM"), OrgDb="org.Hs.eg.db")
-      hg = ids[,2]
-      eg2np = bitr_kegg(hg, fromType='uniprot', toType='kegg', organism='hsa')
-      gse = eg2np[,2]
       
       ggo = groupGO(gene     = gse,
                     OrgDb    = org.Hs.eg.db,
@@ -207,10 +214,46 @@ shinyServer(
     ## Quatrième page Pathway Enrichment
     ##################################################
     
+    
+    ## Charge les pathways de l'homme
+    data(paths.hsa)
+    pathway <- as.list(paths.hsa)
+    
+    ## affiche une liste des pathways
+    pathwayName <- unlist(pathway, use.names=FALSE)
+    
+    output$toPathway <- renderUI({
+      selectInput("pathwayID", "Pathway Name", pathwayName, width = "60%")
+    })
+    
+    ## Met les ID avec le nom des pathways 
+    pathwayTable <- aggregate(.~ind,stack(pathway),paste,collapse=' ')
+    
+    ## Récupère uniquement l'ID sans "hsa"
+    IDpathway <- reactive({
+      gse <- dataIDKegg() 
+      
+      idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+
+      id <- substring(idpathway, 4)
+      pathview(gene.data = gse, pathway.id = id, species = "hsa")
+      
+    })
+  
+    output$PathwayEnrichment <- renderPrint({
+      pathway <- IDpathway()
+      id <- pathway$id
+      print("Téléchargement de la voie métabolique hsa",id)
+    })
+    
+    
     output$valuePathOption1 <- renderPrint({ input$PathOption1 })
     output$valuePathOption2 <- renderPrint({ input$PathOption2 })
     output$valuePathOption3 <- renderPrint({ input$PathOption3 })
     output$valuePathOption4 <- renderPrint({ input$PathOption4 })
+    
+    
+    
     
     ##################################################
     ## Cinquième page Protein Enrichment
