@@ -292,7 +292,7 @@ shinyServer(
       tableau_genome
       
       cpt <- 1
-      tableau_final <- data.frame(matrix(NA,ncol=5,nrow=nrow(tableau_data)))
+      tableau_final <- data.frame(matrix(NA,ncol=5,nrow=nrow(tableau_data), dimnames = list(c("row"),c("Domain ID", "pvalue CHI2", "padj CHI2", "pvalue Fisher", "padj Fisher"))))
       for (x in 1:nrow(tableau_data)){
         ligne_genome <- rownames(subset(tableau_genome, Var1 == as.character(tableau_data[cpt,1])))
         m <- matrix(c(tableau_data[cpt,2],nb_gene_data,tableau_genome[ligne_genome,2],nb_gene_genome), nrow=2, ncol=2)
@@ -304,14 +304,13 @@ shinyServer(
         pvalue_fisher <- res_fish$p.value
 
         # Construction du tableau final #
-        tableau_final[cpt,1]= tableau_data[cpt,1]
+        tableau_final[cpt,1]= as.character(tableau_data[cpt,1])
         tableau_final[cpt,2]= pvalue_chisq
         tableau_final[cpt,3]= 0
         tableau_final[cpt,4]= pvalue_fisher
         tableau_final[cpt,5]= 0
         
         cpt = cpt + 1
-        
         
       }
       tableau_final
