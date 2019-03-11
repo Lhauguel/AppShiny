@@ -271,43 +271,76 @@ shinyServer(
     output$contents_gene <- renderDataTable({
       dataGene()
     })
-    ensembl = useEnsembl(biomart="ensembl")
-    h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
-    output$pfam <- renderDataTable({
-      getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = dataGene(), mart = h_sapiens)
-    })
-    
-    
-    output$nb_gene_total = renderPrint({ nrow(dataGene()) })
-    
-    output$occurences = renderPrint({ 
-      #calcul du nombre de gene dans le fichier#
-      nb_gene_total <- nrow(dataGene())
-      #recherche des ids PFAM en fonction des genes id#
-      data_gene_pfam <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = dataGene(), mart = h_sapiens )
-      #calcul des occurences#
-      occ_data <- table(unlist(data_gene_pfam[2]))
-      #cherche la ligne qui est égale à "" #
-      mauvaise_ligne <- which(rownames(occ_data) == "")
-      #supprime la ligne qui nous sert pas#
-      tableau_pfam <- occ_data[-mauvaise_ligne]
-      #calcul de la frequence#
-      freq_pfamVSdata <- tableau_pfam / nb_gene_total      #recuperation de la liste de tous les genes du genome#
-      liste_gene_genome <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
-      #calcul du nombre de gene dans le genome#
-      nb_gene_genome <- nrow(liste_gene_genome)
-      #recherche des ids PFAM en fonction des genes id#
-      data_genome_pfam <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = liste_gene_genome, mart = h_sapiens)
-      #calcul des occurences#
-      occ_genome <- table(unlist(data_genome_pfam[2]))
-      occ_genome
-      #cherche la ligne degueu#
+
+    output$domain_ID <- renderDataTable({
+      data <- dataComplet()
+      h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+      
+      #requete avec le jeu de données
+      data_gene_id <- data[1]
+      requete_data <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = data_gene_id, mart = h_sapiens)
+      nb_gene_data <- nrow(data_gene_id)
+      occurences <- table(requete_data[2])
+      mauvaise_ligne <- which(rownames(occurences) == "")
+      occurences <- occurences[-mauvaise_ligne] #supprime la ligne avec "" comme nom de domaine
+      tableau_data <- as.data.frame(occurences)
+      
+      #requete avec le genome
+      data_genome_id <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
+      nb_gene_genome <- nrow(data_genome_id)
+      requete_genome <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = data_genome_id, mart = h_sapiens)
+      occ_genome <- table(requete_genome[2])
       mauvaise_ligne_genome <- which(rownames(occ_genome) == "")
-      #supprime la ligne#
-      tableau_pfam_genome <- occ_genome[-mauvaise_ligne_genome]
-      #calcul de la frequence#
-      freq_pfamVSgenome = tableau_pfam_genome / nb_gene_genome
-      freq_pfamVSgenome
+      occ_genome <- occ_genome[-mauvaise_ligne_genome]
+      tableau_genome <- as.data.frame(occ_genome)
+      
+      # Construction du tableau final
+      cpt <- 1
+      tableau_final <- matrix(data="NA", nrow=nrow(tableau_data), ncol=5, dimnames=list(c(), c("Domain ID", "pvalue CHI2", "padj CHI2", "pvalue Fisher", "padj Fisher")), byrow = TRUE)
+      
+      liste_chi2 <- list()
+      liste_fisher <- list()
+      for (x in 1:nrow(tableau_data)){
+        ligne_genome <- rownames(subset(tableau_genome, Var1 == as.character(tableau_data[cpt,1])))
+        m <- matrix(c(tableau_data[cpt,2],nb_gene_data,tableau_genome[ligne_genome,2],nb_gene_genome), nrow=2, ncol=2)
+        
+        # Test du Chi 2 #
+        res_chisq <- chisq.test(m)
+        pvalue_chisq <- res_chisq$p.value
+        liste_chi2 <- append(liste_chi2, pvalue_chisq)
+        
+        # Test de Fisher #
+        res_fish <- fisher.test(m)
+        pvalue_fisher <- res_fish$p.value
+        liste_fisher <- append(liste_fisher, pvalue_fisher)
+      
+        # Construction du tableau final #
+        tableau_final[cpt,1]= as.character(tableau_data[cpt,1])
+        tableau_final[cpt,2]= pvalue_chisq
+        tableau_final[cpt,3]= 0
+        tableau_final[cpt,4]= pvalue_fisher
+        tableau_final[cpt,5]= 0
+        
+        cpt = cpt + 1
+      }
+      
+      # Calcul de la pvalue adj pour le test du chi2
+      cpt = 1
+      liste_adj_chi2 = p.adjust(liste_chi2, method = "BH")
+      for (x in 1:length(liste_adj_chi2)){
+        tableau_final[cpt, 3] = liste_adj_chi2[cpt]
+        cpt = cpt + 1
+      }
+      
+      # Calcul de la pvalue adj pour le test de Fisher
+      cpt = 1
+      liste_adj_fisher = p.adjust(liste_fisher, method = "BH")
+      for (x in 1:length(liste_adj_fisher)){
+        tableau_final[cpt,5] = liste_adj_fisher[cpt]
+        cpt = cpt + 1
+      }
+      tableau_final
     })
+
   }
 )

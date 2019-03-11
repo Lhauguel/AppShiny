@@ -174,12 +174,11 @@ shinyUI(
               withSpinner (type  =  getOption ( "spinner.type" , default =  sample(1:8,1)), 
                            color =  getOption ( "spinner.color" , default =  "#333333" ), 
                            color.background =  getOption ( "spinner.color.background" , default =  "#333333" ),
-                           dataTableOutput("pfam")),
-              #verbatimTextOutput("nb_gene_total"),
-              verbatimTextOutput("occurences"))
+                           dataTableOutput("domain_ID"))
           )
         )
       )
     )
   )
+ )
 )
