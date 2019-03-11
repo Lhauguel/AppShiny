@@ -170,7 +170,15 @@ shinyUI(
                             column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1)),
                             column(4, radioButtons("Ajust", label = "Ajustment", choices = list("holm" = 1, "hochberg" = 2, "hommel" = 3, "bonferroni" = 4, "BH" = 5, "BY" = 6, "fdr" = 7), selected = 4)),
                             column(4, radioButtons("TestStat", label = "Test statistique", choices = list("Chi2" = 1, "Fischer" = 2), selected = 1))
-                          )
+                          ),
+                          
+                          h5("The adjustment methods include the Bonferroni correction ('bonferroni') in which the p-values are multiplied by the number of comparisons."), 
+
+                          h5("Less conservative corrections are also included by Holm (1979) ('holm'), Hochberg (1988) ('hochberg'), Hommel (1988) ('hommel'), Benjamini & Hochberg (1995) ('BH' or its alias 'fdr'), and Benjamini & Yekutieli (2001) ('BY'), respectively. A pass-through option ('none') is also included. The set of methods are contained in the p.adjust.methods vector for the benefit of methods that need to have the method as an option and pass it on to p.adjust."), 
+                          h5("The first four methods are designed to give strong control of the family-wise error rate. There seems no reason to use the unmodified Bonferroni correction because it is dominated by Holm's method, which is also valid under arbitrary assumptions. Hochberg's and Hommel's methods are valid when the hypothesis tests are independent or when they are non-negatively associated (Sarkar, 1998; Sarkar and Chang, 1997)."), 
+                          h5("Hommel's method is more powerful than Hochberg's, but the difference is usually small and the Hochberg p-values are faster to compute."),
+                          h5("The 'BH' (aka 'fdr') and 'BY' method of Benjamini, Hochberg, and Yekutieli control the false discovery rate, the expected proportion of false discoveries amongst the rejected hypotheses. "),
+                          h5("The false discovery rate is a less stringent condition than the family-wise error rate, so these methods are more powerful than the others. Note that you can set n larger than length(p) which means the unobserved p-values are assumed to be greater than all the observed p for 'bonferroni' and 'holm' methods and equal to 1 for the other methods.")
             ),
             mainPanel(
               withSpinner (type  =  getOption ( "spinner.type" , default =  sample(1:8,1)), 
