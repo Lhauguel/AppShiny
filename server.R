@@ -317,9 +317,12 @@ shinyServer(
       occ_genome <- occ_genome[-mauvaise_ligne_genome]
       tableau_genome <- as.data.frame(occ_genome)
       
+      # requete interpro vers description
+      requete_description <- getBM(attributes=c("interpro","interpro_description"), filters = 'interpro', values = tableau_data[,1], mart = h_sapiens)
+      
       # Construction du tableau final
       cpt <- 1
-      tableau_final <- matrix(data="NA", nrow=nrow(tableau_data), ncol=3, dimnames=list(c(), c("Domain ID", "pvalue", "padj")), byrow = TRUE)
+      tableau_final <- matrix(data="NA", nrow=nrow(tableau_data), ncol=5, dimnames=list(c(), c("Domain ID", "Description", "Effectif", "pvalue", "padj")), byrow = TRUE)
       
       liste_test <- list()
       for (x in 1:nrow(tableau_data)){
@@ -342,8 +345,10 @@ shinyServer(
       
         # Construction du tableau final #
         tableau_final[cpt,1]= as.character(tableau_data[cpt,1])
-        tableau_final[cpt,2]= pvalue_test
-        tableau_final[cpt,3]= 0
+        tableau_final[cpt,2] = requete_description[cpt,2]
+        tableau_final[cpt,3] = as.character(tableau_data[cpt,2])
+        tableau_final[cpt,4]= pvalue_test
+        tableau_final[cpt,5]= 0
         
         cpt = cpt + 1
       }
@@ -353,7 +358,7 @@ shinyServer(
       cpt = 1
       liste_adj_test = p.adjust(liste_test, method = ajustement)
       for (x in 1:length(liste_adj_test)){
-        tableau_final[cpt, 3] = liste_adj_test[cpt]
+        tableau_final[cpt, 5] = liste_adj_test[cpt]
         cpt = cpt + 1
       }
       tableau_final
