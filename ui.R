@@ -107,8 +107,7 @@ shinyUI(
           sidebarLayout(
             sidebarPanel( width = 4,
                           h1("GO Term Enrichment"),
-                          sliderInput("PathOption1", label = h4("option 1"), min = 0, 
-                                      max = 100, value = 50, width = "60%"),
+                          uiOutput("sliderPValue"),
                           numericInput("level", label = h4("Go level"), value = 2, max = 8, min = 1),
                           h2("Settings"),
                           
@@ -150,7 +149,7 @@ shinyUI(
               withSpinner (type  =  getOption ( "spinner.type" , default =  sample(1:8,1)), 
                            color =  getOption ( "spinner.color" , default =  "#333333" ), 
                            color.background =  getOption ( "spinner.color.background" , default =  "#333333" ),
-              verbatimTextOutput("PathwayEnrichment"))
+                           imageOutput("PathwayEnrichment"))
             )
           )
         ),
@@ -164,8 +163,7 @@ shinyUI(
           sidebarLayout(
             sidebarPanel( width = 4,
                           h1("Protein Enrichment"),
-                          sliderInput("ProtOption1", label = h4("q-value"), min = 0, 
-                                      max = 1, value = 0.05, width = "60%"), h2("Settings"),
+                          uiOutput("sliderQValue2"),
                           
                           ## Choix base de données statistiques et organisme en colonne
                           fluidRow(

@@ -10,6 +10,7 @@ library(biomaRt)
 library(org.Hs.eg.db)
 library(plotly)
 library(pathview)
+library("png")
 
 ##source("http://bioconductor.org/biocLite.R")
 
@@ -112,10 +113,10 @@ shinyServer(
     ##################################################
     
     ## Fait apparaitre le slider dans l'interface
-    output$sliderQValue <- renderUI({ sliderInput("qValueID1", label = h4("q-value"), min = 0, 
-                                                  max = 1, value = input$qValueID, width = "60%") 
+    output$sliderQValue <- renderUI({ numericInput("qValueID1", label = h4("q-value"), 
+                                                   value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
     })
-    output$sliderFC <- renderUI({ sliderInput("log2FCID1", label = h4("log 2 Fold change"), min = 0, 
+    output$sliderFC <- renderUI({ numericInput("log2FCID1", label = h4("log 2 Fold change"), min = 0, 
                                               max = 2, step = 0.01, value = input$log2FCID, width = "60%") 
     })
     
@@ -141,7 +142,7 @@ shinyServer(
                         col = Expression
                       )) +
                  ##  geom_point(alpha = 0.5) + 
-                 geom_point(aes(text = paste("Symbol:", symbol)), size = 0.5) +
+                 geom_point(aes(text = paste("Symbol:", id)), size = 0.5) +
                  scale_colour_discrete(drop=FALSE) +
                  xlim(c(min(log2(data$log2FoldChange)), max(log2(data$log2FoldChange)))) + ylim(c(min(-log10(data$padj)), max(-log10(data$padj)))) +
                  xlab("log2 fold change") +
@@ -167,7 +168,7 @@ shinyServer(
                         y = log2FoldChange,
                         col = Expression
                       )) +
-                 geom_point(aes(text = paste("Symbol:", symbol)), size = 0.5) +
+                 geom_point(aes(text = paste("Symbol:", id)), size = 0.5) +
                  scale_colour_discrete(drop=FALSE) +
                  xlim(c(min(log2(data$basemean)), max(log2(data$basemean)))) + ylim(c(min(data$log2FoldChange), max(data$log2FoldChange))) +
                  xlab("log2 basemean") +
@@ -191,7 +192,9 @@ shinyServer(
     ## Partie ClusterProfiler 
     #########################
     
-    
+    output$sliderPValue <- renderUI({ numericInput("pValueID1", label = h4("p-value"), 
+                                                    value = input$pValueID, min = 0, max = 1, step = 0.01, width = "60%")
+    })
     
     tableGgo <- reactive({
       gse <- dataIDKegg() 
@@ -246,11 +249,12 @@ shinyServer(
 
       id <- substring(idpathway, 4)
       pathwaytOut <- pathview(gene.data = gse, pathway.id = id, species = "hsa")
+      readPNG("hsa00010.pathview.png")
     })
   
-    output$PathwayEnrichment <- renderPrint({
+    output$PathwayEnrichment <- renderImage({
       IDpathway()
-      print("Téléchargement de la voie métabolique !")
+      
     })
 
     
@@ -259,11 +263,10 @@ shinyServer(
     ## Cinquième page Protein Enrichment
     ##################################################
     
+    output$sliderQValue2 <- renderUI({ numericInput("qValueID2", label = h4("q-value"), 
+                                                   value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
+    })
     
-    output$valueProtOption1 <- renderPrint({ input$ProtOption1 })
-    output$valueProtOption2 <- renderPrint({ input$ProtOption2 })
-    output$valueProtOption3 <- renderPrint({ input$ProtOption3 })
-    output$valueProtOption4 <- renderPrint({ input$ProtOption4 })
     
     output$contents_gene <- renderDataTable({
       dataGene()
@@ -306,6 +309,5 @@ shinyServer(
       freq_pfamVSgenome = tableau_pfam_genome / nb_gene_genome
       freq_pfamVSgenome
     })
-    
   }
 )
