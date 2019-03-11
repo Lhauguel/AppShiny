@@ -57,6 +57,13 @@ shinyServer(
         newTable <- data.frame(id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
       })
     
+    requeteGenome <- reactive ({
+      h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+      #requete avec le genome
+      data_genome_id <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
+      getBM(attributes=c('ensembl_gene_id', 'interpro'), filters = 'ensembl_gene_id', values = data_genome_id, mart = h_sapiens)
+    })
+    
     originGeneID <- reactive({
       if (input$GeneID == 1) originID = "ncbiID"
       else originID = "ensemblID"
@@ -278,8 +285,8 @@ shinyServer(
     })
     
     testStat <- reactive({
-      if (input$TestStat == 1) ajust = "Chi2"
-      else ajust = "Fischer"
+      if (input$TestStat == 1) test = "Chi2"
+      else test = "Fischer"
     })
     
     output$contents_gene <- renderDataTable({
@@ -289,22 +296,22 @@ shinyServer(
     output$domain_ID <- renderDataTable({
       data <- dataComplet()
       ajustement <- ajustement()
+      requete_genome <- requeteGenome()
       testStatistique <- testStat()
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
       
       #requete avec le jeu de données
       data_gene_id <- data[1]
-      requete_data <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = data_gene_id, mart = h_sapiens)
+      requete_data <- getBM(attributes=c('ensembl_gene_id', 'interpro'), filters = 'ensembl_gene_id', values = data_gene_id, mart = h_sapiens)
       nb_gene_data <- nrow(data_gene_id)
       occurences <- table(requete_data[2])
       mauvaise_ligne <- which(rownames(occurences) == "")
       occurences <- occurences[-mauvaise_ligne] #supprime la ligne avec "" comme nom de domaine
       tableau_data <- as.data.frame(occurences)
       
-      #requete avec le genome
+      #requete genome 
       data_genome_id <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
       nb_gene_genome <- nrow(data_genome_id)
-      requete_genome <- getBM(attributes=c('ensembl_gene_id', 'pfam'), filters = 'ensembl_gene_id', values = data_genome_id, mart = h_sapiens)
       occ_genome <- table(requete_genome[2])
       mauvaise_ligne_genome <- which(rownames(occ_genome) == "")
       occ_genome <- occ_genome[-mauvaise_ligne_genome]
@@ -312,47 +319,41 @@ shinyServer(
       
       # Construction du tableau final
       cpt <- 1
-      tableau_final <- matrix(data="NA", nrow=nrow(tableau_data), ncol=5, dimnames=list(c(), c("Domain ID", "pvalue CHI2", "padj CHI2", "pvalue Fisher", "padj Fisher")), byrow = TRUE)
+      tableau_final <- matrix(data="NA", nrow=nrow(tableau_data), ncol=3, dimnames=list(c(), c("Domain ID", "pvalue", "padj")), byrow = TRUE)
       
-      liste_chi2 <- list()
-      liste_fisher <- list()
+      liste_test <- list()
       for (x in 1:nrow(tableau_data)){
         ligne_genome <- rownames(subset(tableau_genome, Var1 == as.character(tableau_data[cpt,1])))
         m <- matrix(c(tableau_data[cpt,2],nb_gene_data,tableau_genome[ligne_genome,2],nb_gene_genome), nrow=2, ncol=2)
         
-        # Test du Chi 2 #
-        res_chisq <- chisq.test(m)
-        pvalue_chisq <- res_chisq$p.value
-        liste_chi2 <- append(liste_chi2, pvalue_chisq)
+        if (testStatistique == "Chi2") {
+          # Test du Chi 2 #
+          res_chisq <- chisq.test(m)
+          pvalue_test <- res_chisq$p.value
+          liste_test <- append(liste_test, pvalue_test)
+        }
         
-        # Test de Fisher #
-        res_fish <- fisher.test(m)
-        pvalue_fisher <- res_fish$p.value
-        liste_fisher <- append(liste_fisher, pvalue_fisher)
+        else {
+          # Test de Fisher #
+          res_fish <- fisher.test(m)
+          pvalue_test <- res_fish$p.value
+          liste_test <- append(liste_test, pvalue_test)
+        }
       
         # Construction du tableau final #
         tableau_final[cpt,1]= as.character(tableau_data[cpt,1])
-        tableau_final[cpt,2]= pvalue_chisq
+        tableau_final[cpt,2]= pvalue_test
         tableau_final[cpt,3]= 0
-        tableau_final[cpt,4]= pvalue_fisher
-        tableau_final[cpt,5]= 0
         
         cpt = cpt + 1
       }
       
+
       # Calcul de la pvalue adj pour le test du chi2
       cpt = 1
-      liste_adj_chi2 = p.adjust(liste_chi2, method = ajustement)
-      for (x in 1:length(liste_adj_chi2)){
-        tableau_final[cpt, 3] = liste_adj_chi2[cpt]
-        cpt = cpt + 1
-      }
-      
-      # Calcul de la pvalue adj pour le test de Fisher
-      cpt = 1
-      liste_adj_fisher = p.adjust(liste_fisher, method = ajustement)
-      for (x in 1:length(liste_adj_fisher)){
-        tableau_final[cpt,5] = liste_adj_fisher[cpt]
+      liste_adj_test = p.adjust(liste_test, method = ajustement)
+      for (x in 1:length(liste_adj_test)){
+        tableau_final[cpt, 3] = liste_adj_test[cpt]
         cpt = cpt + 1
       }
       tableau_final
