@@ -267,6 +267,20 @@ shinyServer(
                                                    value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
     })
     
+    ajustement <- reactive({
+      if (input$Ajust == 1) ajust = "holm"
+      if (input$Ajust == 2) ajust = "hochberg"
+      if (input$Ajust == 3) ajust = "hommel"
+      if (input$Ajust == 4) ajust = "bonferroni"
+      if (input$Ajust == 5) ajust = "BH"
+      if (input$Ajust == 6) ajust = "BY"
+      else ajust = "fdr"
+    })
+    
+    testStat <- reactive({
+      if (input$TestStat == 1) ajust = "Chi2"
+      else ajust = "Fischer"
+    })
     
     output$contents_gene <- renderDataTable({
       dataGene()
@@ -274,6 +288,8 @@ shinyServer(
 
     output$domain_ID <- renderDataTable({
       data <- dataComplet()
+      ajustement <- ajustement()
+      testStatistique <- testStat()
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
       
       #requete avec le jeu de données
@@ -326,7 +342,7 @@ shinyServer(
       
       # Calcul de la pvalue adj pour le test du chi2
       cpt = 1
-      liste_adj_chi2 = p.adjust(liste_chi2, method = "BH")
+      liste_adj_chi2 = p.adjust(liste_chi2, method = ajustement)
       for (x in 1:length(liste_adj_chi2)){
         tableau_final[cpt, 3] = liste_adj_chi2[cpt]
         cpt = cpt + 1
@@ -334,7 +350,7 @@ shinyServer(
       
       # Calcul de la pvalue adj pour le test de Fisher
       cpt = 1
-      liste_adj_fisher = p.adjust(liste_fisher, method = "BH")
+      liste_adj_fisher = p.adjust(liste_fisher, method = ajustement)
       for (x in 1:length(liste_adj_fisher)){
         tableau_final[cpt,5] = liste_adj_fisher[cpt]
         cpt = cpt + 1

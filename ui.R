@@ -167,7 +167,9 @@ shinyUI(
                           
                           ## Choix base de données statistiques et organisme en colonne
                           fluidRow(
-                            column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1))
+                            column(4, radioButtons("Stat", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = 1)),
+                            column(4, radioButtons("Ajust", label = "Ajustment", choices = list("holm" = 1, "hochberg" = 2, "hommel" = 3, "bonferroni" = 4, "BH" = 5, "BY" = 6, "fdr" = 7), selected = 4)),
+                            column(4, radioButtons("TestStat", label = "Test statistique", choices = list("Chi2" = 1, "Fischer" = 2), selected = 1))
                           )
             ),
             mainPanel(
