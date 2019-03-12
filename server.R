@@ -202,6 +202,9 @@ shinyServer(
     output$sliderPValue <- renderUI({ numericInput("pValueID1", label = h4("p-value"), 
                                                     value = input$pValueID, min = 0, max = 1, step = 0.01, width = "60%")
     })
+    output$ButtonStat1 <- renderUI({
+      radioButtons("Stat1", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
+      })
     
     tableGgo <- reactive({
       gse <- dataIDKegg() 
@@ -244,6 +247,9 @@ shinyServer(
     output$toPathway <- renderUI({
       selectInput("pathwayID", "Pathway Name", pathwayName, width = "60%")
     })
+    output$ButtonStat2 <- renderUI({
+      radioButtons("Stat2", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
+    })
     
     ## Met les ID avec le nom des pathways 
     pathwayTable <- aggregate(.~ind,stack(pathway),paste,collapse=' ')
@@ -270,11 +276,20 @@ shinyServer(
     ## Cinquième page Protein Enrichment
     ##################################################
     
-    output$sliderQValue2 <- renderUI({ numericInput("qValueID2", label = h4("q-value"), 
-                                                   value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
+    
+    output$ButtonStat3 <- renderUI({
+      radioButtons("Stat3", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
     })
     
-    ajustement <- reactive({
+    SEAreactive <- eventReactive(input$StartProteine, {
+      if (input$Stat3 == 2) {
+        output$sliderQValue2 <- renderUI({ numericInput("qValueID2", label = h4("q-value"), 
+                                                      value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
+        })
+      }
+    })  
+    #SEAreactive()
+    ajustement <- eventReactive(input$StartProteine, {
       if (input$Ajust == 1) ajust = "holm"
       if (input$Ajust == 2) ajust = "hochberg"
       if (input$Ajust == 3) ajust = "hommel"
@@ -284,7 +299,7 @@ shinyServer(
       else ajust = "fdr"
     })
     
-    testStat <- reactive({
+    testStat <- eventReactive(input$StartProteine, {
       if (input$TestStat == 1) test = "Chi2"
       else test = "Fischer"
     })
@@ -296,6 +311,7 @@ shinyServer(
     output$domain_ID <- renderDataTable({
       data <- dataComplet()
       ajustement <- ajustement()
+      SEAreactive()
       requete_genome <- requeteGenome()
       testStatistique <- testStat()
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
