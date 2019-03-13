@@ -204,28 +204,51 @@ shinyServer(
     tableGgo <- reactive({
       gse <- dataIDKegg() 
       
-      
       ggo = groupGO(gene     = gse,
                     OrgDb    = org.Hs.eg.db,
                     level    = input$level,
                     readable = TRUE)
     })
     
+    testplot <- function(){
+      ggo <- tableGgo()
+      barplot(ggo, drop=TRUE, showCategory = 25, options = list(dom = 'Bfrtip',
+                                                                buttons = c('csv', 'excel', 'pdf')
+      ))
+    }
+    
     output$GroupGO = renderPlot({
-      ggo <- tableGgo()
-      barplot(ggo, drop=TRUE, showCategory = 25)
+      testplot()
     })
     
-    output$GOID = renderTable({
+    output$GoTermPlot <- downloadHandler(
+      filename=function(){
+        paste("graph","png",sep=".")
+      },content=function(file){
+        png(file)
+        print(testplot())
+        dev.off() 
+      }
+    )
+    
+    output$GOID = renderDataTable({
       ggo <- tableGgo()
-      ggo[,1:4]
+      datatable(
+        ggo[,1:4],
+        rownames = F,
+        options = list(
+          lengthMenu = list(
+            c(10, 25, 50, 100,-1),
+            list('10', '25', '50', '100', 'All')
+          ),
+          dom = 'Bfrtip',
+          buttons = c('csv', 'excel', 'pdf')
+        ),
+        
+        extensions = 'Buttons',
+        escape = F
+      )
     })
-    
-    
-    output$valueGOTermOption1 <- renderPrint({ input$GOTermOption1 })
-    output$valueGOTermOption2 <- renderPrint({ input$GOTermOption2 })
-    output$valueGOTermOption3 <- renderPrint({ input$GOTermOption3 })
-    output$valueGOTermOption4 <- renderPrint({ input$GOTermOption4 })
     
     ##################################################
     ## Quatrième page Pathway Enrichment

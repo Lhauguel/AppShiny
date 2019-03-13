@@ -117,11 +117,13 @@ shinyUI(
                           )
             ),
             mainPanel(
+              downloadButton('GoTermPlot','Download', width = "30%"),
               withSpinner (type  =  getOption ( "spinner.type" , default =  sample(1:8,1)), 
                            color =  getOption ( "spinner.color" , default =  "#333333" ), 
                            color.background =  getOption ( "spinner.color.background" , default =  "#333333" ), 
                            plotOutput("GroupGO")),
-              tableOutput("GOID")
+              
+              dataTableOutput("GOID")
             )
           )
         ),
