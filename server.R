@@ -173,7 +173,7 @@ shinyServer(
                  geom_point(aes(text = paste("Symbol:", id)), size = 0.5) +
                  scale_colour_discrete(drop=FALSE) +
                  xlim(c(min(log2(data$basemean)), max(log2(data$basemean)))) + ylim(c(min(data$log2FoldChange), max(data$log2FoldChange))) +
-                 xlab("log2 basemean") +
+                 xlab("log2 basemean expression") +
                  ylab("log2 fold change"))
     })
     
@@ -182,9 +182,6 @@ shinyServer(
     #output$toCol <- renderUI({
     #  selectInput("BiomaRtOrgo", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
     #})
-    output$valueDataOption2 <- renderPrint({ input$DataOption2 })
-    output$valueDataOption3 <- renderPrint({ input$DataOption3 })
-    output$valueDataOption4 <- renderPrint({ input$DataOption4 })
     
     ##################################################
     ## Troisieme page GO Term Enrichment
@@ -296,8 +293,6 @@ shinyServer(
       PathwayImage()
     })
 
-
-    
     
     ##################################################
     ## Cinquième page Protein Enrichment

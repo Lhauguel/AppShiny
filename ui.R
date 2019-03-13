@@ -12,7 +12,7 @@ shinyUI(
     tagList(
       themeSelector(),
       navbarPage(
-        "Enrichissement fonctionnelle avec Shiny",
+        "Functional enhancement with Shiny",
         
         ##################################################
         ############ Première page Input Data ############
@@ -25,7 +25,7 @@ shinyUI(
           sidebarLayout(
             sidebarPanel( width = 11,
                           h1("Shiny application for enrichment analysis"),
-                          fileInput('fichier1', 'Sélectionner un fichier',
+                          fileInput('fichier1', 'Select a file',
                                     accept = c(
                                       'text/csv',
                                       "text/comma-separated-values,text/plain",
