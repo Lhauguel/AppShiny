@@ -75,10 +75,10 @@ shinyUI(
             sidebarPanel( width = 4,
                           h1("Whole Data Inspection"),
                           uiOutput("sliderQValue"),
-                          uiOutput("sliderFC"),
+                          uiOutput("sliderFC")
                           ## Slider mis dans server.R et apparait ici, permet de mettre en dépendance 
                           ## avec la valeur initiale mise dans la première page 
-                          h2("Settings")
+                          #h2("Settings")
                           
                           ## Choix base de données statistiques et organisme en colonne
                           # fluidRow(
@@ -149,7 +149,7 @@ shinyUI(
               withSpinner (type  =  getOption ( "spinner.type" , default =  sample(1:8,1)), 
                            color =  getOption ( "spinner.color" , default =  "#333333" ), 
                            color.background =  getOption ( "spinner.color.background" , default =  "#333333" ),
-                           imageOutput("PathwayEnrichment"))
+                           tableOutput("PathwayEnrichment"))
             )
           )
         ),

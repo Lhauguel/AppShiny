@@ -60,8 +60,11 @@ shinyServer(
     requeteGenome <- reactive ({
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
       #requete avec le genome
-      data_genome_id <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
-      getBM(attributes=c('ensembl_gene_id', 'interpro'), filters = 'ensembl_gene_id', values = data_genome_id, mart = h_sapiens)
+      id <- originGeneID()
+      if (id == "ncbiID") ID = "entrezgene"
+      else ID = "ensembl_gene_id"
+      data_genome_id <- getBM(attributes = c(ID), mart = h_sapiens)
+      getBM(attributes=c(ID, 'interpro'), filters = ID, values = data_genome_id, mart = h_sapiens)
     })
     
     originGeneID <- reactive({
@@ -98,14 +101,6 @@ shinyServer(
     output$contents <- renderDataTable({
       dataComplet()
     })
-    
-    output$valueGeneID <- renderPrint({ input$GeneID })
-    output$valueStat <- renderPrint({ input$Stat })
-    output$valueOrga <- renderPrint({ input$NameOrga })
-    
-    output$valuePValueID <- renderText({ input$pValueID }) 
-    output$valueQValueID <- renderText({ input$qValueID })
-    output$valuelog2FCIDD <- renderText({ input$log2FCID })
     
     output$valueStart <- renderPrint({ input$Start })
     
@@ -256,18 +251,15 @@ shinyServer(
     
     ## Récupère uniquement l'ID sans "hsa"
     IDpathway <- reactive({
-      gse <- dataIDKegg() 
-      
+      data = dataComplet()
+      matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
       idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-
       id <- substring(idpathway, 4)
-      pathwaytOut <- pathview(gene.data = gse, pathway.id = id, species = "hsa")
-      readPNG("hsa00010.pathview.png")
+      pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
     })
   
-    output$PathwayEnrichment <- renderImage({
+    output$PathwayEnrichment <- renderTable({
       IDpathway()
-      
     })
 
     
@@ -307,18 +299,21 @@ shinyServer(
     output$contents_gene <- renderDataTable({
       dataGene()
     })
-
+    
     output$domain_ID <- renderDataTable({
       data <- dataComplet()
       ajustement <- ajustement()
       SEAreactive()
       requete_genome <- requeteGenome()
+      id <- originGeneID()
+      if (id == "ncbiID") ID = "entrezgene"
+      else ID = "ensembl_gene_id"
       testStatistique <- testStat()
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
       
       #requete avec le jeu de données
       data_gene_id <- data[1]
-      requete_data <- getBM(attributes=c('ensembl_gene_id', 'interpro'), filters = 'ensembl_gene_id', values = data_gene_id, mart = h_sapiens)
+      requete_data <- getBM(attributes=c(ID, 'interpro'), filters = ID, values = data_gene_id, mart = h_sapiens)
       nb_gene_data <- nrow(data_gene_id)
       occurences <- table(requete_data[2])
       mauvaise_ligne <- which(rownames(occurences) == "")
@@ -326,7 +321,7 @@ shinyServer(
       tableau_data <- as.data.frame(occurences)
       
       #requete genome 
-      data_genome_id <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
+      data_genome_id <- getBM(attributes = c(ID), mart = h_sapiens)
       nb_gene_genome <- nrow(data_genome_id)
       occ_genome <- table(requete_genome[2])
       mauvaise_ligne_genome <- which(rownames(occ_genome) == "")
