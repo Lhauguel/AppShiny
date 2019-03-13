@@ -393,7 +393,7 @@ shinyServer(
         tableau_final[cpt,1]= as.character(tableau_data[cpt,1])
         tableau_final[cpt,2] = requete_description[cpt,2]
         tableau_final[cpt,3] = as.character(tableau_data[cpt,2])
-        tableau_final[cpt,4]= pvalue_test
+        tableau_final[cpt,4]= round(pvalue_test,3)
         tableau_final[cpt,5]= 0
         
         cpt = cpt + 1
@@ -402,7 +402,7 @@ shinyServer(
 
       # Calcul de la pvalue adj pour le test du chi2
       cpt = 1
-      liste_adj_test = p.adjust(liste_test, method = ajustement)
+      liste_adj_test = round(p.adjust(liste_test, method = ajustement),3)
       for (x in 1:length(liste_adj_test)){
         tableau_final[cpt, 5] = liste_adj_test[cpt]
         cpt = cpt + 1
