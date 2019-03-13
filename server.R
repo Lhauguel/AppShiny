@@ -60,8 +60,11 @@ shinyServer(
     requeteGenome <- reactive ({
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
       #requete avec le genome
-      data_genome_id <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
-      getBM(attributes=c('ensembl_gene_id', 'interpro'), filters = 'ensembl_gene_id', values = data_genome_id, mart = h_sapiens)
+      id <- originGeneID()
+      if (id == "ncbiID") ID = "entrezgene"
+      else ID = "ensembl_gene_id"
+      data_genome_id <- getBM(attributes = c(ID), mart = h_sapiens)
+      getBM(attributes=c(ID, 'interpro'), filters = ID, values = data_genome_id, mart = h_sapiens)
     })
     
     originGeneID <- reactive({
@@ -98,14 +101,6 @@ shinyServer(
     output$contents <- renderDataTable({
       dataComplet()
     })
-    
-    output$valueGeneID <- renderPrint({ input$GeneID })
-    output$valueStat <- renderPrint({ input$Stat })
-    output$valueOrga <- renderPrint({ input$NameOrga })
-    
-    output$valuePValueID <- renderText({ input$pValueID }) 
-    output$valueQValueID <- renderText({ input$qValueID })
-    output$valuelog2FCIDD <- renderText({ input$log2FCID })
     
     output$valueStart <- renderPrint({ input$Start })
     
@@ -209,28 +204,51 @@ shinyServer(
     tableGgo <- reactive({
       gse <- dataIDKegg() 
       
-      
       ggo = groupGO(gene     = gse,
                     OrgDb    = org.Hs.eg.db,
                     level    = input$level,
                     readable = TRUE)
     })
     
+    testplot <- function(){
+      ggo <- tableGgo()
+      barplot(ggo, drop=TRUE, showCategory = 25, options = list(dom = 'Bfrtip',
+                                                                buttons = c('csv', 'excel', 'pdf')
+      ))
+    }
+    
     output$GroupGO = renderPlot({
-      ggo <- tableGgo()
-      barplot(ggo, drop=TRUE, showCategory = 25)
+      testplot()
     })
     
-    output$GOID = renderTable({
+    output$GoTermPlot <- downloadHandler(
+      filename=function(){
+        paste("graph","png",sep=".")
+      },content=function(file){
+        png(file)
+        print(testplot())
+        dev.off() 
+      }
+    )
+    
+    output$GOID = renderDataTable({
       ggo <- tableGgo()
-      ggo[,1:4]
+      datatable(
+        ggo[,1:4],
+        rownames = F,
+        options = list(
+          lengthMenu = list(
+            c(10, 25, 50, 100,-1),
+            list('10', '25', '50', '100', 'All')
+          ),
+          dom = 'Bfrtip',
+          buttons = c('csv', 'excel', 'pdf')
+        ),
+        
+        extensions = 'Buttons',
+        escape = F
+      )
     })
-    
-    
-    output$valueGOTermOption1 <- renderPrint({ input$GOTermOption1 })
-    output$valueGOTermOption2 <- renderPrint({ input$GOTermOption2 })
-    output$valueGOTermOption3 <- renderPrint({ input$GOTermOption3 })
-    output$valueGOTermOption4 <- renderPrint({ input$GOTermOption4 })
     
     ##################################################
     ## Quatrième page Pathway Enrichment
@@ -256,19 +274,28 @@ shinyServer(
     
     ## Récupère uniquement l'ID sans "hsa"
     IDpathway <- reactive({
-      gse <- dataIDKegg() 
-      
+      data = dataComplet()
+      matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
       idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-
       id <- substring(idpathway, 4)
-      pathwaytOut <- pathview(gene.data = gse, pathway.id = id, species = "hsa")
-      readPNG("hsa00010.pathview.png")
+      pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
+    })
+    
+    PathwayImage <- reactive ({
+      data = dataComplet()
+      matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
+      idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+      id <- substring(idpathway, 4)
+      file <- paste("hsa",id,".pathview.png",sep="")
+      # Return a list containing the filename and alt text
+      list(src = file)
     })
   
     output$PathwayEnrichment <- renderImage({
       IDpathway()
-      
+      PathwayImage()
     })
+
 
     
     
@@ -307,18 +334,21 @@ shinyServer(
     output$contents_gene <- renderDataTable({
       dataGene()
     })
-
+    
     output$domain_ID <- renderDataTable({
       data <- dataComplet()
       ajustement <- ajustement()
       SEAreactive()
       requete_genome <- requeteGenome()
+      id <- originGeneID()
+      if (id == "ncbiID") ID = "entrezgene"
+      else ID = "ensembl_gene_id"
       testStatistique <- testStat()
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
       
       #requete avec le jeu de données
       data_gene_id <- data[1]
-      requete_data <- getBM(attributes=c('ensembl_gene_id', 'interpro'), filters = 'ensembl_gene_id', values = data_gene_id, mart = h_sapiens)
+      requete_data <- getBM(attributes=c(ID, 'interpro'), filters = ID, values = data_gene_id, mart = h_sapiens)
       nb_gene_data <- nrow(data_gene_id)
       occurences <- table(requete_data[2])
       mauvaise_ligne <- which(rownames(occurences) == "")
@@ -326,7 +356,7 @@ shinyServer(
       tableau_data <- as.data.frame(occurences)
       
       #requete genome 
-      data_genome_id <- getBM(attributes = c('ensembl_gene_id'), mart = h_sapiens)
+      data_genome_id <- getBM(attributes = c(ID), mart = h_sapiens)
       nb_gene_genome <- nrow(data_genome_id)
       occ_genome <- table(requete_genome[2])
       mauvaise_ligne_genome <- which(rownames(occ_genome) == "")
@@ -363,7 +393,7 @@ shinyServer(
         tableau_final[cpt,1]= as.character(tableau_data[cpt,1])
         tableau_final[cpt,2] = requete_description[cpt,2]
         tableau_final[cpt,3] = as.character(tableau_data[cpt,2])
-        tableau_final[cpt,4]= pvalue_test
+        tableau_final[cpt,4]= round(pvalue_test,3)
         tableau_final[cpt,5]= 0
         
         cpt = cpt + 1
@@ -372,7 +402,7 @@ shinyServer(
 
       # Calcul de la pvalue adj pour le test du chi2
       cpt = 1
-      liste_adj_test = p.adjust(liste_test, method = ajustement)
+      liste_adj_test = round(p.adjust(liste_test, method = ajustement),3)
       for (x in 1:length(liste_adj_test)){
         tableau_final[cpt, 5] = liste_adj_test[cpt]
         cpt = cpt + 1
