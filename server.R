@@ -281,17 +281,20 @@ shinyServer(
       pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
     })
     
-    
-  
-    output$PathwayEnrichment <- renderImage({
-      IDpathway()
+    PathwayImage <- reactive ({
+      data = dataComplet()
       matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
       idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
       id <- substring(idpathway, 4)
       file <- paste("hsa",id,".pathview.png",sep="")
       # Return a list containing the filename and alt text
       list(src = file)
-    }, deleteFile = FALSE)
+    })
+  
+    output$PathwayEnrichment <- renderImage({
+      IDpathway()
+      PathwayImage()
+    })
 
 
     
