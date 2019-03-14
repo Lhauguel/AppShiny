@@ -74,6 +74,22 @@ shinyServer(
       gse
     })
     
+    pathviewEnsembl <- reactive({
+      data <- dataComplet()
+      dataEnsembl = data[,1]
+      h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+      idEnsemblNcbi<- getBM(attributes=c('ensembl_gene_id', 'entrezgene'), filters = 'ensembl_gene_id', values = dataEnsembl, mart = h_sapiens)
+      idEnsemblNcbi <-na.exclude(idEnsemblNcbi)
+      for (i in 1:nrow(data)) {
+        for (j in 1:nrow(idEnsemblNcbi)) {
+          if (data[i,1] == idEnsemblNcbi[j,1]) {
+            idEnsemblNcbi[j,3] = data[i,3]
+          }
+        }
+      }
+      return(idEnsemblNcbi)
+    })
+    
     dataGene = reactive({req(input$fichier1)
       data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
       data[1]
@@ -285,17 +301,7 @@ shinyServer(
         pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
       }
       if (input$GeneID == 2) {
-        dataEnsembl = data[,1]
-        h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
-        idEnsemblNcbi<- getBM(attributes=c('ensembl_gene_id', 'entrezgene'), filters = 'ensembl_gene_id', values = dataEnsembl, mart = h_sapiens)
-        idEnsemblNcbi <-na.exclude(idEnsemblNcbi)
-        for (i in 1:nrow(data)) {
-          for (j in 1:nrow(idEnsemblNcbi)) {
-            if (data[i,1] == idEnsemblNcbi[j,1]) {
-              idEnsemblNcbi[j,3] = data[i,3]
-            }
-          }
-        }
+        idEnsemblNcbi<- pathviewEnsembl()
         matrixFC <- matrix(data=idEnsemblNcbi[,3], ncol=1, dimnames=list(c(idEnsemblNcbi[,2]), c()), byrow = TRUE)
         pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
       }
@@ -306,17 +312,7 @@ shinyServer(
       idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
       id <- substring(idpathway, 4)
       if (input$GeneID == 2) {
-        dataEnsembl = data[,1]
-        h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
-        idEnsemblNcbi<- getBM(attributes=c('ensembl_gene_id', 'entrezgene'), filters = 'ensembl_gene_id', values = dataEnsembl, mart = h_sapiens)
-        idEnsemblNcbi <-na.exclude(idEnsemblNcbi)
-        for (i in 1:nrow(data)) {
-          for (j in 1:nrow(idEnsemblNcbi)) {
-            if (data[i,1] == idEnsemblNcbi[j,1]) {
-              idEnsemblNcbi[j,3] = data[i,3]
-            }
-          }
-        }
+        idEnsemblNcbi<- pathviewEnsembl()
         matrixFC <- matrix(data=idEnsemblNcbi[,3], ncol=1, dimnames=list(c(idEnsemblNcbi[,2]), c()), byrow = TRUE)
         file <- paste("hsa",id,".pathview.png",sep="")
         list(src = file)
@@ -331,7 +327,7 @@ shinyServer(
     output$PathwayEnrichment <- renderImage({
       IDpathway()
       PathwayImage()
-    })
+    }, deleteFile = FALSE)
     
     
     ##################################################
