@@ -1,4 +1,4 @@
-geneid,baseMean,log2FoldChange,lfcSE,stat,pvalue,padj,chrom,strand,left,right,symbol,name,location
+geneid,baseMean,log2FoldChange,lfcSE,stat,pvalue,padj,chrom,strand,left,right,GeneName,name,location
 ENSG00000223972,1.556,-0.247,0.263,-0.938,0.348,0.588,1,+,11868,14409,DDX11L1,DEAD/H (Asp-Glu-Ala-Asp/His) box helicase 11 like 1 [Source:HGNC Symbol;Acc:HGNC:37102],1:11868-14409
 ENSG00000227232,231.791,-0.169,0.091,-1.858,0.063,0.185,1,-,14362,29370,WASH7P,WAS protein family homolog 7 pseudogene [Source:HGNC Symbol;Acc:HGNC:38034],1:14362-29370
 ENSG00000243485,1.405,-0.399,0.259,-1.543,0.123,NA,1,+,29553,31097,RP11-34P13.3,,1:29553-31097

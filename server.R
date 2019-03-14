@@ -25,13 +25,14 @@ shinyServer(
                                   if(ncol(data) < 3){
                                     data <- read.csv(input$fichier1$datapath, header = TRUE, sep = "\t")
                                   }
+                                  Name <-data[,"GeneName"]
                                   X <-data[,"geneid"]
                                   BaseMean <- data[,"baseMean"]
                                   log2FC <- data[,"log2FoldChange"]
                                   Pvalue <- data[,"pvalue"]
                                   Qvalue <- data[,"padj"]
                                   
-                                  newTable <- data.frame(id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
+                                  newTable <- data.frame(GeneName = Name, id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
                                 })
     
     requeteGenome <- reactive ({
