@@ -363,8 +363,8 @@ shinyServer(
     output$contents_gene <- renderDataTable({
       dataGene()
     })
-    
-    output$domain_ID <- renderDataTable({
+    tableauprot <- reactive({
+      
       data <- dataComplet()
       ajustement <- ajustement()
       requete_genome <- requeteGenome()
@@ -416,7 +416,7 @@ shinyServer(
           pvalue_test <- res_fish$p.value
           liste_test <- append(liste_test, pvalue_test)
         }
-      
+        
         # Construction du tableau final #
         tableau_final[cpt,1]= as.character(tableau_data[cpt,1])
         tableau_final[cpt,2] = requete_description[cpt,2]
@@ -426,7 +426,7 @@ shinyServer(
         
         cpt = cpt + 1
       }
-
+      
       # Calcul de la pvalue adj pour le test du chi2
       cpt = 1
       liste_adj_test = round(p.adjust(liste_test, method = ajustement),3)
@@ -454,6 +454,15 @@ shinyServer(
       }
       #print(tableau_final)
       tableau_final_final
+    })
+    
+    output$domain_ID <- renderDataTable({
+      tableauprot()
+    })
+    
+    output$plotdomain_ID <- renderPlotly({
+      tableau = tableauprot()
+      
     })
   }
 )
