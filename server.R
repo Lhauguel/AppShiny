@@ -262,26 +262,67 @@ shinyServer(
       radioButtons("Stat2", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
     })
     
-    ## Met les ID avec le nom des pathways 
+    ## Met les ID avec le nom des pathways
     pathwayTable <- aggregate(.~ind,stack(pathway),paste,collapse=' ')
     
     ## Récupère uniquement l'ID sans "hsa"
     IDpathway <- reactive({
       data = dataComplet()
-      matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
-      idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-      id <- substring(idpathway, 4)
-      pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
+      id <- originGeneID()
+      if (input$GeneID == 1) {
+        matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
+        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+        id <- substring(idpathway, 4)
+        pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
+      }
+      if (input$GeneID == 2) {
+        dataEnsembl = data[,1]
+        h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+        idEnsemblNcbi<- getBM(attributes=c('ensembl_gene_id', 'entrezgene'), filters = 'ensembl_gene_id', values = dataEnsembl, mart = h_sapiens)
+        idEnsemblNcbi <-na.exclude(idEnsemblNcbi)
+        for (i in 1:nrow(data)) {
+          for (j in 1:nrow(idEnsemblNcbi)) {
+            if (data[i,1] == idEnsemblNcbi[j,1]) {
+              idEnsemblNcbi[j,3] = data[i,3]
+            }
+          }
+        }
+        matrixFC <- matrix(data=idEnsemblNcbi[,3], ncol=1, dimnames=list(c(idEnsemblNcbi[,2]), c()), byrow = TRUE)
+        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+        id <- substring(idpathway, 4)
+        pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
+      }
     })
     
     PathwayImage <- reactive ({
       data = dataComplet()
-      matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
-      idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-      id <- substring(idpathway, 4)
-      file <- paste("hsa",id,".pathview.png",sep="")
-      # Return a list containing the filename and alt text
-      list(src = file)
+      if (input$GeneID == 1) {
+        matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
+        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+        id <- substring(idpathway, 4)
+        file <- paste("hsa",id,".pathview.png",sep="")
+        # Return a list containing the filename and alt text
+        list(src = file)
+      }
+      if (input$GeneID == 2) {
+        dataEnsembl = data[,1]
+        h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+        idEnsemblNcbi<- getBM(attributes=c('ensembl_gene_id', 'entrezgene'), filters = 'ensembl_gene_id', values = dataEnsembl, mart = h_sapiens)
+        idEnsemblNcbi <-na.exclude(idEnsemblNcbi)
+        for (i in 1:nrow(data)) {
+          for (j in 1:nrow(idEnsemblNcbi)) {
+            if (data[i,1] == idEnsemblNcbi[j,1]) {
+              idEnsemblNcbi[j,3] = data[i,3]
+            }
+          }
+        }
+        matrixFC <- matrix(data=idEnsemblNcbi[,3], ncol=1, dimnames=list(c(idEnsemblNcbi[,2]), c()), byrow = TRUE)
+        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+        id <- substring(idpathway, 4)
+        file <- paste("hsa",id,".pathview.png",sep="")
+        # Return a list containing the filename and alt text
+        list(src = file)
+      }
     })
     
     output$PathwayEnrichment <- renderImage({
@@ -294,13 +335,13 @@ shinyServer(
     ## Cinquième page Protein Enrichment
     ##################################################
     
-    
-    output$ButtonStat3 <- renderUI({
-      radioButtons("Stat3", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
-    })
-    
     output$sliderPadj <- renderUI({ 
       numericInput("pAdjID1", label = h4("p-value adj"), value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
+    })
+    
+    SEA_stat <- reactive({
+      if (input$Stat1 == 1) stat = "GSEA"
+      else stat = "SEA"
     })
     
     
@@ -326,6 +367,10 @@ shinyServer(
     
     tableauprot <- reactive({
       data <- dataComplet()
+      stat <-SEA_stat()
+      if (stat == "SEA"){
+        data <- data[which(data[,5] >= input$qValueIDSEA),]
+      }
       ajustement <- ajustement()
       requete_genome <- requeteGenome()
       id <- originGeneID()
