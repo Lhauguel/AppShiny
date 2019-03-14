@@ -50,8 +50,17 @@ shinyServer(
       else originID = "ensemblID"
     })
     
+    SEA_stat1 <- reactive({
+      if (input$Stat1 == 1) stat = "GSEA"
+      else stat = "SEA"
+    })
+    
     dataIDKegg = reactive({ 
-      data = dataComplet()
+      data <- dataComplet()
+      stat1 <-SEA_stat1()
+      if (stat1 == "SEA"){
+        data <- data[which(data[,5] >= input$qValueIDSEA2),]
+      }
       id <- originGeneID()
       
       if (id == "ncbiID") ID = "ENTREZID"
@@ -189,7 +198,7 @@ shinyServer(
       radioButtons("Stat1", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
     })
     
-    tableGgo <- reactive({
+    tableGgo <- eventReactive(input$StartGO, {
       gse <- dataIDKegg() 
       
       ggo = groupGO(gene     = gse,
@@ -224,23 +233,23 @@ shinyServer(
     )
     
     output$GOID = renderDataTable({
-      ggo <- tableGgo()
-      newggo <- ggo[order(-ggo$Count)]
-      datatable(
-        newggo[,1:4],
-        rownames = F,
-        options = list(
-          lengthMenu = list(
-            c(10, 25, 50, 100,-1),
-            list('10', '25', '50', '100', 'All')
+        ggo <- tableGgo()
+        newggo <- ggo[order(-ggo$Count)]
+        datatable(
+          newggo[,1:4],
+          rownames = F,
+          options = list(
+            lengthMenu = list(
+              c(10, 25, 50, 100,-1),
+              list('10', '25', '50', '100', 'All')
+            ),
+            dom = 'Bfrtip',
+            buttons = c('csv', 'excel', 'pdf')
           ),
-          dom = 'Bfrtip',
-          buttons = c('csv', 'excel', 'pdf')
-        ),
-        extensions = 'Buttons',
-        escape = F
-      )
-    })
+          extensions = 'Buttons',
+          escape = F
+        )
+      })
     
     ##################################################
     ## Quatrième page Pathway Enrichment
@@ -339,13 +348,12 @@ shinyServer(
       numericInput("pAdjID1", label = h4("p-value adj"), value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
     })
     
-    SEA_stat <- reactive({
+    SEA_stat2 <- reactive({
       if (input$Stat1 == 1) stat = "GSEA"
       else stat = "SEA"
     })
     
-    
-    #SEAreactive()
+
     ajustement <- eventReactive(input$StartProteine, {
       if (input$Ajust == 1) ajust = "holm"
       if (input$Ajust == 2) ajust = "hochberg"
@@ -367,8 +375,8 @@ shinyServer(
     
     tableauprot <- reactive({
       data <- dataComplet()
-      stat <-SEA_stat()
-      if (stat == "SEA"){
+      stat2 <-SEA_stat2()
+      if (stat2 == "SEA"){
         data <- data[which(data[,5] >= input$qValueIDSEA),]
       }
       ajustement <- ajustement()

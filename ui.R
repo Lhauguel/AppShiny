@@ -118,9 +118,22 @@ shinyUI(
               
               ## Choix base de données statistiques et organisme en colonne
               fluidRow(
-                column(4, uiOutput("ButtonStat1"))
+                column(4, radioButtons("Stat1", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2))),
+                column(6, 
+                       conditionalPanel(
+                         condition = "input.Stat1 == '2'",
+                         numericInput("qValueIDSEA2", label = "q-Value", value = 0.05, min = 0, max = 1, step = 0.01)
+                       )
+                )
+              ),
+              fluidRow(
+                column(12,align = "center",
+                       actionButton("StartGO", "Start")
+                )
               )
+              
             ),
+            
             mainPanel(
               downloadButton('GoTermPlot','Download', width = "30%", align = "right"),
               withSpinner (type  =  getOption ( "spinner.type" , default =  sample(1:8,1)), 
@@ -177,16 +190,16 @@ shinyUI(
               ## Choix base de données statistiques et organisme en colonne
               fluidRow(
                 column(4, radioButtons("Ajust", label = "Ajustment", choices = list("holm" = 1, "hochberg" = 2, "hommel" = 3, "bonferroni" = 4, "BH" = 5, "BY" = 6, "fdr" = 7), selected = 4)),
-                column(4, radioButtons("TestStat", label = "Test statistique", choices = list("Chi2" = 1, "Fischer" = 2), selected = 1))
+                column(4, radioButtons("TestStat", label = "Statistics Test", choices = list("Chi2" = 1, "Fischer" = 2), selected = 1))
               ),
               
               uiOutput("sliderPadj"),
               
               fluidRow(
-                column(4, radioButtons("Stat1", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2))),
+                column(4, radioButtons("Stat2", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2))),
                 column(6, 
                        conditionalPanel(
-                         condition = "input.Stat1 == '2'",
+                         condition = "input.Stat2 == '2'",
                          numericInput("qValueIDSEA", label = "q-Value", value = 0.05, min = 0, max = 1, step = 0.01)
                        )
                 )
