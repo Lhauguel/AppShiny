@@ -324,7 +324,7 @@ shinyServer(
       dataGene()
     })
     
-    output$domain_ID <- renderDataTable({
+    tableauprot <- reactive({
       data <- dataComplet()
       ajustement <- ajustement()
       requete_genome <- requeteGenome()
@@ -415,6 +415,16 @@ shinyServer(
         }
       }
       tableau_final_final
+    })
+    
+    output$domain_ID <- renderDataTable({
+      tableauprot()
+    })
+    
+    output$plotdomain_ID <- renderPlotly({
+      tableau = tableauprot()
+      df = data.frame(domainID=tableau[,1], effectif=tableau[,3])
+      ggplot(data=df, aes(x=domainID, y=effectif, fill=domainID)) + geom_bar(stat="identity") + coord_flip() #+ theme_minimal()
     })
   }
 )

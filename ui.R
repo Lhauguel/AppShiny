@@ -223,7 +223,8 @@ shinyUI(
                 type  =  getOption ( "spinner.type" , default =  sample(1:8,1)), 
                 color =  getOption ( "spinner.color" , default =  "#333333" ), 
                 color.background =  getOption ( "spinner.color.background" , default =  "#333333" ),
-                dataTableOutput("domain_ID"))
+                dataTableOutput("domain_ID")),
+                plotlyOutput("plotdomain_ID")
             )
           )
         )
