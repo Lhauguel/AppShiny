@@ -60,6 +60,12 @@ shinyServer(
         
       })
     
+   # output$ImageFile <- renderImage({
+    #  file <- "Fichier_titre.png"
+      # Return a list containing the filename and alt text
+     # list(src = file)
+    #}, deleteFile = FALSE)
+    
     #dataValidate <- reactive({
      # id <- originGeneID()
     #  validate(
@@ -361,7 +367,6 @@ shinyServer(
     output$domain_ID <- renderDataTable({
       data <- dataComplet()
       ajustement <- ajustement()
-      #SEAreactive()
       requete_genome <- requeteGenome()
       id <- originGeneID()
       if (id == "ncbiID") ID = "entrezgene"
@@ -421,7 +426,6 @@ shinyServer(
         
         cpt = cpt + 1
       }
-      
 
       # Calcul de la pvalue adj pour le test du chi2
       cpt = 1

@@ -25,6 +25,7 @@ shinyUI(
           sidebarLayout(
             sidebarPanel( width = 11,
                           h1("Shiny application for enrichment analysis"),
+                          
                           fileInput('fichier1', 'Select a file',
                                     accept = c(
                                       'text/csv',
@@ -60,6 +61,10 @@ shinyUI(
                           )
             ),
             mainPanel(
+              conditionalPanel(
+                condition = "input.Start == false",
+                # Return a list containing the filename and alt text
+                img(src = "Fichier_titre.png")),
               dataTableOutput("contents")
             )
           )
