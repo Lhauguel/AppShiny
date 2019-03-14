@@ -278,10 +278,10 @@ shinyServer(
     IDpathway <- reactive({
       data = dataComplet()
       id <- originGeneID()
+      idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+      id <- substring(idpathway, 4)
       if (input$GeneID == 1) {
         matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
-        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-        id <- substring(idpathway, 4)
         pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
       }
       if (input$GeneID == 2) {
@@ -297,22 +297,14 @@ shinyServer(
           }
         }
         matrixFC <- matrix(data=idEnsemblNcbi[,3], ncol=1, dimnames=list(c(idEnsemblNcbi[,2]), c()), byrow = TRUE)
-        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-        id <- substring(idpathway, 4)
         pathwaytOut <- pathview(gene.data = matrixFC, pathway.id = id, species = "hsa")
       }
     })
     
     PathwayImage <- reactive ({
       data = dataComplet()
-      if (input$GeneID == 1) {
-        matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
-        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-        id <- substring(idpathway, 4)
-        file <- paste("hsa",id,".pathview.png",sep="")
-        # Return a list containing the filename and alt text
-        list(src = file)
-      }
+      idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
+      id <- substring(idpathway, 4)
       if (input$GeneID == 2) {
         dataEnsembl = data[,1]
         h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
@@ -326,10 +318,12 @@ shinyServer(
           }
         }
         matrixFC <- matrix(data=idEnsemblNcbi[,3], ncol=1, dimnames=list(c(idEnsemblNcbi[,2]), c()), byrow = TRUE)
-        idpathway <- as.character(subset(pathwayTable, values==input$pathwayID)$ind)
-        id <- substring(idpathway, 4)
         file <- paste("hsa",id,".pathview.png",sep="")
-        # Return a list containing the filename and alt text
+        list(src = file)
+      }
+      else {
+        matrixFC <- matrix(data=data[,3],ncol=1, dimnames=list(c(data[,1]), c()), byrow = TRUE)
+        file <- paste("hsa",id,".pathview.png",sep="")
         list(src = file)
       }
     })
@@ -345,7 +339,7 @@ shinyServer(
     ##################################################
     
     output$sliderPadj <- renderUI({ 
-      numericInput("pAdjID1", label = h4("p-value adj"), value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
+      numericInput("pAdjID1", label = h4("q-value (filter table)"), value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
     })
     
     SEA_stat2 <- reactive({
