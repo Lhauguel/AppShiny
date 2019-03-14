@@ -32,7 +32,7 @@ shinyServer(
                                   Pvalue <- data[,"pvalue"]
                                   Qvalue <- data[,"padj"]
                                   
-                                  newTable <- data.frame(GeneName = Name, id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
+                                  newTable <- data.frame(id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue, GeneName = Name)
                                 })
     
     requeteGenome <- reactive ({
