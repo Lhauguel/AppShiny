@@ -1,7 +1,9 @@
 ## A installé indépendemment du script  
-## source("http://bioconductor.org/biocLite.R")
-## biocLite("clusterProfiler")
-## install.packages("stringr", dependencies=TRUE)
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("clusterProfiler")
+# biocLite("biomaRt")
+# biocLite("pathview")
+# biocLite("org.Hs.eg.db")
 
 library(shiny)
 library(DT)
@@ -14,72 +16,23 @@ library(pathview)
 library("png")
 library(stringr)
 
-##source("http://bioconductor.org/biocLite.R")
-
-## install biomart
-## biocLite("biomaRt")
-
-## exemple biomart
-##install.packages(biomaRt)
-
-##data<- read.table("Donnees_test.csv", sep = ",")
-##GeneID <- data[1]
-
-##ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
-##ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl", version=78)
-##ensembl
-##ensembl = useMart(biomart="ENSEMBL_MART_ENSEMBL", host="uswest.ensembl.org")
-
-
-
-
-## install clusterProfiler
-##biocLite("clusterProfiler")
-##vignette("clusterProfiler", package="clusterProfiler")  ## documentation
-##library(clusterProfiler)
-
-## install pathview
-##biocLite("pathview")
-##browseVignettes("pathview")  ## documentation
-##library(pathview)
-
-
 # Define server logic required to draw a histogram
 shinyServer(
   function(session, input, output) {
     dataComplet = eventReactive(input$Start,
-      {req(input$fichier1)
-        data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
-        X <-data[,"geneid"]
-        BaseMean <- data[,"baseMean"]
-        log2FC <- data[,"log2FoldChange"]
-        Pvalue <- data[,"pvalue"]
-        Qvalue <- data[,"padj"]
-        
-        newTable <- data.frame(id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
-        
-      })
-    
-   # output$ImageFile <- renderImage({
-    #  file <- "Fichier_titre.png"
-      # Return a list containing the filename and alt text
-     # list(src = file)
-    #}, deleteFile = FALSE)
-    
-    #dataValidate <- reactive({
-     # id <- originGeneID()
-    #  validate(
-    #    need(input$fichier1 != "", "Please select a file")
-    #  )
-    #  if (id == "ensemblID") {
-    #  validate(
-    #    need(!is.null(str_match(input$fichier1[,1], "(ENSG.*)")), "Please check if 'origine gene IDs' is correct")
-    #  )
-    #  else {
-        
-    #  }
-    #  }
-    #})
+                                {req(input$fichier1)
+                                  data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
+                                  if(ncol(data) < 3){
+                                    data <- read.csv(input$fichier1$datapath, header = TRUE, sep = "\t")
+                                  }
+                                  X <-data[,"geneid"]
+                                  BaseMean <- data[,"baseMean"]
+                                  log2FC <- data[,"log2FoldChange"]
+                                  Pvalue <- data[,"pvalue"]
+                                  Qvalue <- data[,"padj"]
+                                  
+                                  newTable <- data.frame(id = X, basemean = BaseMean, log2FoldChange = log2FC, pvalue = Pvalue, padj = Qvalue)
+                                })
     
     requeteGenome <- reactive ({
       h_sapiens = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
@@ -109,54 +62,60 @@ shinyServer(
       eg2np = bitr_kegg(hg, fromType='uniprot', toType='kegg', organism='hsa')
       gse = eg2np[,2]
       gse
-      })
+    })
     
     dataGene = reactive({req(input$fichier1)
       data <- read.csv(input$fichier1$datapath, header = TRUE, sep = ",")
       data[1]
-      
     })
     
     ##################################################
     ## Première page Input Data
     ##################################################
     
-    ## Premier fichier
-#    Erreurfichier <- reactive ({
-#      data = dataComplet()
-#      id = originGeneID()
-#      if ((id == "ensemblID") & (data[1,1] != (^"ENSG"))) {
-        
-#      }
-#    })
-    
-    
     output$contents <- renderDataTable({
-      #dataValidate()
       dataComplet()
     })
     
-    output$valueStart <- renderPrint({ input$Start })
+    output$valueStart <- renderPrint({ 
+      input$Start 
+    })
     
     ensembl = useEnsembl(biomart="ensembl")
     list_ensembl = listDatasets(ensembl)[2]
+    
     output$toCol <- renderUI({
-      selectInput("BiomaRtOrgo", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
+      selectInput(
+        "BiomaRtOrgo", 
+        "Organism Name", 
+        list_ensembl, 
+        selected = "Human genes (GRCh38.p12)")
     })
     
     ##################################################
     ## Deuxieme page Whole Data Inspection
     ##################################################
     
-    ## Fait apparaitre le slider dans l'interface
-    output$sliderQValue <- renderUI({ numericInput("qValueID1", label = h4("q-value"), 
-                                                   value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
+    output$sliderQValue <- renderUI({ 
+      numericInput(
+        "qValueID1", 
+        label = h4("q-value"), 
+        value = input$qValueID, 
+        min = 0, 
+        max = 1, 
+        step = 0.01, 
+        width = "60%")
     })
-    output$sliderFC <- renderUI({ numericInput("log2FCID1", label = h4("log 2 Fold change"), min = 0, 
-                                              max = 2, step = 0.01, value = input$log2FCID, width = "60%") 
+    output$sliderFC <- renderUI({ 
+      numericInput(
+        "log2FCID1", 
+        label = h4("log 2 Fold change"), 
+        min = 0, 
+        max = 2, 
+        step = 0.01, 
+        value = input$log2FCID, 
+        width = "60%") 
     })
-    
-    ## Test de volcano plot mettre les limites de Foldchange et de -log de pvalue ajustée 
     
     
     output$Vulcano = renderPlotly({
@@ -177,10 +136,10 @@ shinyServer(
                         y = -log10(padj),
                         col = Expression
                       )) +
-                 ##  geom_point(alpha = 0.5) + 
                  geom_point(aes(text = paste("Symbol:", id)), size = 0.5) +
                  scale_colour_discrete(drop=FALSE) +
-                 xlim(c(min(log2(data$log2FoldChange)), max(log2(data$log2FoldChange)))) + ylim(c(min(-log10(data$padj)), max(-log10(data$padj)))) +
+                 xlim(c(min(log2(data$log2FoldChange)), max(log2(data$log2FoldChange)))) + 
+                 ylim(c(min(-log10(data$padj)), max(-log10(data$padj)))) +
                  xlab("log2 fold change") +
                  ylab("-log10(p-value)"))
     })
@@ -206,16 +165,11 @@ shinyServer(
                       )) +
                  geom_point(aes(text = paste("Symbol:", id)), size = 0.5) +
                  scale_colour_discrete(drop=FALSE) +
-                 xlim(c(min(log2(data$basemean)), max(log2(data$basemean)))) + ylim(c(min(data$log2FoldChange), max(data$log2FoldChange))) +
+                 xlim(c(min(log2(data$basemean)), max(log2(data$basemean)))) + 
+                 ylim(c(min(data$log2FoldChange), max(data$log2FoldChange))) +
                  xlab("log2 basemean expression") +
                  ylab("log2 fold change"))
     })
-    
-    #ensembl = useEnsembl(biomart="ensembl")
-    #list_ensembl = listDatasets(ensembl)[2]
-    #output$toCol <- renderUI({
-    #  selectInput("BiomaRtOrgo", "Organism Name", list_ensembl, selected = "Human genes (GRCh38.p12)")
-    #})
     
     ##################################################
     ## Troisieme page GO Term Enrichment
@@ -225,9 +179,11 @@ shinyServer(
     ## Partie ClusterProfiler 
     #########################
     
-    output$sliderPValue <- renderUI({ numericInput("pValueID1", label = h4("p-value"), 
-                                                   value = input$pValueID, min = 0, max = 1, step = 0.01, width = "60%")
+    output$sliderPValue <- renderUI({ 
+      numericInput("pValueID1", label = h4("p-value"), 
+                   value = input$pValueID, min = 0, max = 1, step = 0.01, width = "60%")
     })
+    
     output$ButtonStat1 <- renderUI({
       radioButtons("Stat1", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
     })
@@ -239,14 +195,17 @@ shinyServer(
                     OrgDb    = org.Hs.eg.db,
                     level    = input$level,
                     readable = TRUE)
-      
     })
     
     testplot <- function(){
       ggo <- tableGgo()
-      barplot(ggo, order=TRUE, drop=TRUE, showCategory = input$category, options = list(dom = 'Bfrtip',
-                                                                                        buttons = c('csv', 'excel', 'pdf')
-      ))
+      barplot(
+        ggo, 
+        order=TRUE, 
+        drop=TRUE, 
+        showCategory = input$category, 
+        options = list(dom = 'Bfrtip', buttons = c('csv', 'excel', 'pdf'))
+      )
     }
     
     output$GroupGO = renderPlot({
@@ -277,7 +236,6 @@ shinyServer(
           dom = 'Bfrtip',
           buttons = c('csv', 'excel', 'pdf')
         ),
-        
         extensions = 'Buttons',
         escape = F
       )
@@ -298,6 +256,7 @@ shinyServer(
     output$toPathway <- renderUI({
       selectInput("pathwayID", "Pathway Name", pathwayName, width = "60%")
     })
+    
     output$ButtonStat2 <- renderUI({
       radioButtons("Stat2", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
     })
@@ -323,12 +282,12 @@ shinyServer(
       # Return a list containing the filename and alt text
       list(src = file)
     })
-  
+    
     output$PathwayEnrichment <- renderImage({
       IDpathway()
       PathwayImage()
     })
-
+    
     
     ##################################################
     ## Cinquième page Protein Enrichment
@@ -339,11 +298,11 @@ shinyServer(
       radioButtons("Stat3", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
     })
     
-    output$sliderPadj <- renderUI({ numericInput("pAdjID1", label = h4("p-value adj"), 
-                                                 value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
+    output$sliderPadj <- renderUI({ 
+      numericInput("pAdjID1", label = h4("p-value adj"), value = input$qValueID, min = 0, max = 1, step = 0.01, width = "60%")
     })
     
- 
+    
     #SEAreactive()
     ajustement <- eventReactive(input$StartProteine, {
       if (input$Ajust == 1) ajust = "holm"
@@ -363,8 +322,8 @@ shinyServer(
     output$contents_gene <- renderDataTable({
       dataGene()
     })
-    tableauprot <- reactive({
-      
+    
+    output$domain_ID <- renderDataTable({
       data <- dataComplet()
       ajustement <- ajustement()
       requete_genome <- requeteGenome()
@@ -436,14 +395,16 @@ shinyServer(
       }
       
       taille <- length(which(tableau_final[,5] >= input$pAdjID1))
-      #print(tableau_final)
-      tableau_final_final <- matrix(data="NA", nrow=taille,  ncol=5, dimnames=list(c(), c("Domain ID", "Description", "Effectif", "pvalue", "padj")), byrow = TRUE)
+      tableau_final_final <- matrix(
+        data="NA", 
+        nrow=taille,  
+        ncol=5, 
+        dimnames=list(c(), c("Domain ID", "Description", "Effectif", "pvalue", "padj")), byrow = TRUE)
+      
       cpt = 1
       for (x in 1:nrow(tableau_final)){
         padj <- tableau_final[x,5]
         if (padj >= input$pAdjID1 ) {
-          #print(paste("valeur padj:",padj))
-          #print(paste("valeur tab:", input$pAdjID1))
           tableau_final_final[cpt,1] = as.character(tableau_final[x,1])
           tableau_final_final[cpt,2] = as.character(tableau_final[x,2])
           tableau_final_final[cpt,3] = as.character(tableau_final[x,3])
@@ -452,17 +413,7 @@ shinyServer(
           cpt = cpt + 1
         }
       }
-      #print(tableau_final)
       tableau_final_final
-    })
-    
-    output$domain_ID <- renderDataTable({
-      tableauprot()
-    })
-    
-    output$plotdomain_ID <- renderPlotly({
-      tableau = tableauprot()
-      
     })
   }
 )
