@@ -112,7 +112,6 @@ shinyUI(
             sidebarPanel( 
               width = 4,
               h1("GO Term Enrichment"),
-              uiOutput("sliderPValue"),
               numericInput("level", label = h4("Go level"), value = 2, max = 8, min = 1, width = "60%"),
               numericInput("category", label = h4("Go category"), value = 25, max = 100, min = 1, width = "60%"),
               h2("Settings"),
