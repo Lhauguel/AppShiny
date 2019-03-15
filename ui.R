@@ -160,7 +160,6 @@ shinyUI(
               
               ## Choix base de données statistiques et organisme en colonne
               fluidRow(
-                uiOutput("ButtonStat2"),
                 uiOutput("toPathway")
               )
             ),

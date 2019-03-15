@@ -283,9 +283,6 @@ shinyServer(
       selectInput("pathwayID", "Pathway Name", pathwayName, width = "60%")
     })
     
-    output$ButtonStat2 <- renderUI({
-      radioButtons("Stat2", label = "Statistics", choices = list("GSEA" = 1, "SEA" = 2), selected = input$Stat)
-    })
     
     ## Met les ID avec le nom des pathways
     pathwayTable <- aggregate(.~ind,stack(pathway),paste,collapse=' ')
