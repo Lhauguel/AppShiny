@@ -1,0 +1,3 @@
+[submodule "AppShiny"]
+	path = AppShiny
+	url = https://github.com/Lhauguel/AppShiny
